@@ -21,126 +21,47 @@
      ============================================================ */
   :root{
     color-scheme: light;
-    --primary:#EA580C;          /* warm primary orange */
-    --primary-dark:#C2410C;     /* deeper orange for hover / pressed */
-    --primary-glow:rgba(234,88,12,.25);
-    --heading:#9A3412;          /* emphasised names / headings */
-
-    --header-bg:linear-gradient(90deg,#C2410C 0%,#EA580C 100%);
-    --header-text:#ffffff;
-    --header-muted:#FDE3CB;
-    --logo-bg:rgba(255,255,255,.20);
-
-    --bg:#FBF6F1;
-    --card:#ffffff;
-    --soft-bg:#FBF3EC;
-    --border:#EFE3D8;
-    --border-strong:#E0CBB8;
-    --dash-border:#F0C79B;
-
-    --text:#2B2018;
-    --muted:#8C7A6B;
-
-    --pill-bg:#FFEDD5;
-    --pill-text:#9A3412;
-
-    --tips-bg:#FFF7ED;
-    --tips-border:#FBD9AE;
-    --tips-text:#7A4A1E;
-
-    --secondary-bg:#F5EDE6;
-    --secondary-hover:#ECE0D6;
-    --menu-hover:#FBF3EC;
-
-    --track:#EFE3D8;
-    --dot-inactive:#D9C9BB;
-    --img-placeholder:#E7DED6;
-
-    --box-object:#EA580C;
-    --box-person:#2563EB;
-
-    --ok:#107c10;
-    --warn:#c0392b;
+    --primary:#EA580C; --primary-dark:#C2410C; --primary-glow:rgba(234,88,12,.25); --heading:#9A3412;
+    --header-bg:linear-gradient(90deg,#C2410C 0%,#EA580C 100%); --header-text:#ffffff; --header-muted:#FDE3CB; --logo-bg:rgba(255,255,255,.20);
+    --bg:#FBF6F1; --card:#ffffff; --soft-bg:#FBF3EC; --border:#EFE3D8; --border-strong:#E0CBB8; --dash-border:#F0C79B;
+    --text:#2B2018; --muted:#8C7A6B;
+    --pill-bg:#FFEDD5; --pill-text:#9A3412;
+    --tips-bg:#FFF7ED; --tips-border:#FBD9AE; --tips-text:#7A4A1E;
+    --secondary-bg:#F5EDE6; --secondary-hover:#ECE0D6; --menu-hover:#FBF3EC;
+    --track:#EFE3D8; --dot-inactive:#D9C9BB; --img-placeholder:#E7DED6;
+    --box-object:#EA580C; --box-person:#2563EB;
+    --ok:#107c10; --warn:#c0392b;
     --err-bg:#FFF4F1; --err-border:#F3C6BC; --err-text:#A12626;
     --status-bg:#FFF8E6; --status-border:#F0DCA0; --status-text:#7A5C00;
-
-    --shadow:0 10px 28px rgba(120,60,10,.10);
-    --lightbox-bg:rgba(30,18,8,.85);
+    --note-bg:#EFF6FF; --note-border:#C9E0FB; --note-text:#2C5A8C;
+    --shadow:0 10px 28px rgba(120,60,10,.10); --lightbox-bg:rgba(30,18,8,.85);
   }
   [data-theme="dark"]{
     color-scheme: dark;
-    --primary:#FB923C;
-    --primary-dark:#F97316;
-    --primary-glow:rgba(251,146,60,.30);
-    --heading:#FDBA74;
-
-    --header-bg:linear-gradient(90deg,#241812 0%,#3A271A 100%);
-    --header-text:#FFF3E8;
-    --header-muted:#E8B98A;
-    --logo-bg:rgba(255,255,255,.14);
-
-    --bg:#17120E;
-    --card:#221A14;
-    --soft-bg:#271D16;
-    --border:#3A2E24;
-    --border-strong:#4A3B2E;
-    --dash-border:#6B4A2E;
-
-    --text:#F2E9E1;
-    --muted:#B09C8C;
-
-    --pill-bg:rgba(251,146,60,.14);
-    --pill-text:#FB923C;
-
-    --tips-bg:#241A12;
-    --tips-border:#4A3722;
-    --tips-text:#E8B98A;
-
-    --secondary-bg:#2E241C;
-    --secondary-hover:#3A2E24;
-    --menu-hover:#2E241C;
-
-    --track:#3A2E24;
-    --dot-inactive:#4A3B2E;
-    --img-placeholder:#2E241C;
-
-    --box-object:#FB923C;
-    --box-person:#60A5FA;
-
-    --ok:#4ade80;
-    --warn:#f87171;
+    --primary:#FB923C; --primary-dark:#F97316; --primary-glow:rgba(251,146,60,.30); --heading:#FDBA74;
+    --header-bg:linear-gradient(90deg,#241812 0%,#3A271A 100%); --header-text:#FFF3E8; --header-muted:#E8B98A; --logo-bg:rgba(255,255,255,.14);
+    --bg:#17120E; --card:#221A14; --soft-bg:#271D16; --border:#3A2E24; --border-strong:#4A3B2E; --dash-border:#6B4A2E;
+    --text:#F2E9E1; --muted:#B09C8C;
+    --pill-bg:rgba(251,146,60,.14); --pill-text:#FB923C;
+    --tips-bg:#241A12; --tips-border:#4A3722; --tips-text:#E8B98A;
+    --secondary-bg:#2E241C; --secondary-hover:#3A2E24; --menu-hover:#2E241C;
+    --track:#3A2E24; --dot-inactive:#4A3B2E; --img-placeholder:#2E241C;
+    --box-object:#FB923C; --box-person:#60A5FA;
+    --ok:#4ade80; --warn:#f87171;
     --err-bg:#3A1E19; --err-border:#6B342A; --err-text:#F7A99A;
     --status-bg:#332811; --status-border:#5C4A22; --status-text:#F0D08A;
-
-    --shadow:0 10px 28px rgba(0,0,0,.45);
-    --lightbox-bg:rgba(0,0,0,.90);
+    --note-bg:#16283A; --note-border:#2C4A6B; --note-text:#9EC5EC;
+    --shadow:0 10px 28px rgba(0,0,0,.45); --lightbox-bg:rgba(0,0,0,.90);
   }
 
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
-  body{
-    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
-    background:var(--bg); color:var(--text);
-    display:flex; flex-direction:column; min-height:100vh;
-    transition:background .2s ease, color .2s ease;
-  }
-  .topbar{
-    background:var(--header-bg); color:var(--header-text);
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 24px; flex:0 0 auto;
-  }
+  body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; transition:background .2s ease, color .2s ease;}
+  .topbar{background:var(--header-bg); color:var(--header-text); display:flex; align-items:center; justify-content:space-between; padding:14px 24px; flex:0 0 auto;}
   .brand{display:flex; align-items:center; gap:12px; font-size:20px; font-weight:600;}
   .logo{width:38px; height:38px; border-radius:50%; background:var(--logo-bg); display:flex; align-items:center; justify-content:center; font-size:19px;}
   .topbar-right{display:flex; align-items:center; gap:16px;}
-  .credit{font-size:13px; color:var(--header-muted);}
-  .credit b{color:var(--header-text); font-weight:600;}
-  .themeToggle{
-    width:38px; height:38px; border-radius:50%;
-    border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.12);
-    color:var(--header-text); cursor:pointer; font-size:18px; line-height:1;
-    display:flex; align-items:center; justify-content:center;
-    transition:background .15s, transform .15s;
-  }
+  .themeToggle{width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.12); color:var(--header-text); cursor:pointer; font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center; transition:background .15s, transform .15s;}
   .themeToggle:hover{background:rgba(255,255,255,.24); transform:scale(1.05);}
   .wrap{flex:1 0 auto; max-width:1180px; width:100%; margin:0 auto; padding:24px 20px 30px;}
   .screen{display:none; animation:fade .25s ease;}
@@ -156,12 +77,21 @@
   .link{background:none; border:none; color:var(--primary); cursor:pointer; font-size:14px; font-weight:600;}
   .link:hover{text-decoration:underline;}
   .card{background:var(--card); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:26px 28px;}
-  .dropzone{border:2px dashed var(--dash-border); border-radius:12px; padding:38px 20px; text-align:center; cursor:pointer; transition:background .15s,border-color .15s;}
+  .dropzone{border:2px dashed var(--dash-border); border-radius:12px; padding:32px 20px; text-align:center; cursor:pointer; transition:background .15s,border-color .15s;}
   .dropzone:hover,.dropzone.drag{background:var(--soft-bg); border-color:var(--primary);}
   .dropzone .icon{font-size:44px; color:var(--primary);}
   .dropzone .hint{color:var(--muted); font-size:14px; margin-top:10px;}
   .privacy{margin:18px auto 0; display:flex; gap:8px; align-items:center; width:max-content; background:var(--pill-bg); color:var(--pill-text); padding:8px 14px; border-radius:20px; font-size:13px; font-weight:600;}
   .unsupported{display:none; margin:16px auto 0; max-width:640px; text-align:left; background:var(--err-bg); border:1px solid var(--err-border); color:var(--err-text); padding:14px 16px; border-radius:10px; font-size:14px; line-height:1.5;}
+  /* OR divider and describe box */
+  .orDivider{display:flex; align-items:center; text-align:center; color:var(--muted); margin:22px 0; font-weight:700; font-size:13px;}
+  .orDivider::before,.orDivider::after{content:""; flex:1; height:1px; background:var(--border);}
+  .orDivider span{width:40px; height:40px; border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 12px; background:var(--card);}
+  .describe label{display:block; font-weight:700; color:var(--text); margin-bottom:8px; font-size:15px;}
+  .describe input{width:100%; padding:13px 15px; border:1px solid var(--border-strong); border-radius:9px; font-size:15px; background:var(--card); color:var(--text);}
+  .describe input::placeholder{color:var(--muted);}
+  .describe input:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-glow);}
+  .describe .hint{color:var(--muted); font-size:12.5px; margin-top:8px;}
   .cols{display:grid; grid-template-columns:1.55fr 1fr; gap:22px; align-items:start;}
   @media(max-width:860px){.cols{grid-template-columns:1fr;}}
   .imgFrame{position:relative; display:block; width:100%; border-radius:12px; overflow:hidden; background:var(--img-placeholder); line-height:0;}
@@ -188,10 +118,11 @@
   .chip{display:flex; gap:10px; align-items:center; width:max-content; margin:0 auto 18px; background:var(--card); border:1px solid var(--border); border-radius:30px; padding:6px 14px 6px 6px; box-shadow:0 3px 10px rgba(0,0,0,.05);}
   .chip img{width:34px; height:34px; border-radius:50%; object-fit:cover; background:var(--img-placeholder);}
   .chip b{color:var(--primary);}
-  .ctxBar{display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:18px;}
+  .ctxBar{display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:14px;}
   .ctxBar .mini{width:40px; height:40px; border-radius:8px; object-fit:cover; background:var(--img-placeholder);}
   .ctxBar .txt{font-size:15px;}
   .ctxBar .txt b{color:var(--heading);}
+  .searchNote{display:none; margin:0 0 16px; background:var(--note-bg); border:1px solid var(--note-border); color:var(--note-text); padding:10px 14px; border-radius:9px; font-size:13px; line-height:1.5;}
   .resultsLayout{display:grid; grid-template-columns:230px 1fr; gap:20px; align-items:start;}
   @media(max-width:820px){.resultsLayout{grid-template-columns:1fr;}}
   .filters{background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); padding:18px;}
@@ -239,7 +170,6 @@
   footer{flex:0 0 auto; text-align:center; color:var(--muted); font-size:12px; padding:16px; border-top:1px solid var(--border);}
   .modelNote{max-width:900px; margin:16px auto 0; background:var(--soft-bg); border:1px dashed var(--dash-border); border-radius:10px; padding:11px 16px; font-size:12.5px; color:var(--muted);}
   .modelNote b{color:var(--heading);}
-  /* global error banner */
   #errBanner{display:none; background:var(--err-bg); color:var(--err-text); border-bottom:1px solid var(--err-border); padding:10px 16px; font-size:13px; text-align:center;}
 </style>
 </head>
@@ -248,20 +178,26 @@
   <header class="topbar">
     <div class="brand"><div class="logo">&#128269;</div><span>ObjectFinder</span></div>
     <div class="topbar-right">
-      <div class="credit">Created by: <b>Michael Gerontides</b></div>
       <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode"><span id="themeIcon">&#9790;</span></button>
     </div>
   </header>
   <main class="wrap">
-    <!-- ============ SCREEN 1 : UPLOAD ============ -->
+    <!-- ============ SCREEN 1 : START (UPLOAD OR DESCRIBE) ============ -->
     <section class="screen active" id="screen1">
       <div class="card" style="max-width:720px;margin:0 auto;">
-        <h1>Start by uploading an image</h1>
-        <p class="sub">Upload a photo that contains the subject you want to find.</p>
+        <h1>Start your search</h1>
+        <p class="sub">Upload an image and pick a subject, or type a short description of what to find.</p>
         <div class="dropzone" id="dropzone">
           <div class="icon">&#128247;</div>
           <div><button class="btn" id="uploadBtn" type="button" style="margin-top:12px;"><span>&#11014;</span> Upload image</button></div>
           <div class="hint">Drag and drop or browse. Your image never leaves your computer.</div>
+        </div>
+        <div class="orDivider"><span>OR</span></div>
+        <div class="describe">
+          <label for="descInput">Describe what to find</label>
+          <input type="text" id="descInput" placeholder="e.g. black cat, black and white dog, a goose" />
+          <button class="btn" id="descBtn" type="button" style="width:100%;justify-content:center;margin-top:12px;">Search by description</button>
+          <div class="hint">Works best with an animal or object and one or two colors, for example "black cat" or "brown horse".</div>
         </div>
         <div class="privacy"><span>&#128274;</span> 100% offline, runs in your browser</div>
         <div class="unsupported" id="unsupported">
@@ -294,9 +230,9 @@
           <div class="tips">
             <b>How it works</b>
             <ul>
-              <li>We search for images that contain a similar subject.</li>
+              <li>For a person, we match by face, so results show the same individual when the face is clearly visible.</li>
+              <li>For an animal or object, we match by category, so results show the same kind of subject.</li>
               <li>The subject can appear with other people or objects, not only alone.</li>
-              <li>Only images that actually contain your subject are shown.</li>
             </ul>
           </div>
           <button class="btn" id="toFolderBtn" type="button" style="margin-top:16px;width:100%;justify-content:center;" disabled>Continue to choose folder &#8594;</button>
@@ -327,6 +263,7 @@
         <div style="flex:1;"></div>
         <button class="link" id="startOver" type="button" style="color:var(--muted);">Start over</button>
       </div>
+      <div class="searchNote" id="searchNote"></div>
       <div class="progress" id="idxProgress">
         <div class="bar"><i id="idxBar"></i></div>
         <div class="label" id="idxLabel">Preparing&hellip;</div>
@@ -347,13 +284,13 @@
       </div>
     </section>
     <div class="stepper" id="stepper">
-      <div class="step" data-step="1"><div class="dot">1</div><div class="t">Upload Image</div><div class="s">Upload a photo</div></div>
+      <div class="step" data-step="1"><div class="dot">1</div><div class="t">Start</div><div class="s">Upload or describe</div></div>
       <div class="step" data-step="2"><div class="dot">2</div><div class="t">Select Subject</div><div class="s">Pick the subject</div></div>
       <div class="step" data-step="3"><div class="dot">3</div><div class="t">Choose Folder</div><div class="s">Select a folder</div></div>
       <div class="step" data-step="4"><div class="dot">4</div><div class="t">Results</div><div class="s">See matches</div></div>
     </div>
     <div class="modelNote">
-      <b>Note:</b> the subject detection and similarity models download once from a CDN the first time you upload an image (needs internet that first time), then run fully on your machine and are cached for offline reuse. Best in Microsoft Edge or Chrome.
+      <b>Note:</b> the detection, similarity, and face recognition models download once from a CDN the first time they are needed (needs internet that first time), then run fully on your machine and are cached for offline reuse. Best in Microsoft Edge or Chrome.
     </div>
   </main>
   <div class="lightbox" id="lightbox">
@@ -362,12 +299,17 @@
   </div>
   <footer>ObjectFinder &middot; Created by Michael Gerontides</footer>
 <!--
-  IMPORTANT ARCHITECTURE NOTE:
+  ARCHITECTURE NOTE:
   This is a PLAIN script (not type="module"). All UI event listeners are attached
-  synchronously and DO NOT depend on the AI library loading. The Transformers.js
-  library is loaded LAZILY via dynamic import() only when the first image is
-  uploaded. If the CDN is unreachable, the UI still works and a clear on-screen
-  message is shown, the app is never left dead.
+  synchronously and DO NOT depend on any AI library loading. Libraries load LAZILY
+  via dynamic import() only when first needed. If a CDN is unreachable, the UI still
+  works and a clear on-screen message is shown, the app is never left dead.
+  Matching modes:
+    - object/animal (image): DETR detects the class, CLIP image similarity ranks crops.
+    - person (image): Human library face recognition matches the same individual.
+    - description (text): CLIP text-to-image. If the phrase maps to a detectable class
+      (Option A strict), DETR crops that class and CLIP text ranks it; otherwise a
+      whole-image CLIP text match is used as a looser fallback.
 -->
 <script>
 (function(){
@@ -378,7 +320,7 @@
   const themeIcon   = document.getElementById("themeIcon");
   function refreshThemeIcon(){
     const t = document.documentElement.getAttribute("data-theme");
-    themeIcon.innerHTML = (t === "dark") ? "&#9728;" : "&#9790;"; // sun when dark, moon when light
+    themeIcon.innerHTML = (t === "dark") ? "&#9728;" : "&#9790;";
     themeToggle.setAttribute("title", (t === "dark") ? "Switch to light mode" : "Switch to dark mode");
     themeToggle.setAttribute("aria-label", (t === "dark") ? "Switch to light mode" : "Switch to dark mode");
   }
@@ -406,26 +348,81 @@
   const CLIP_MODEL = "Xenova/clip-vit-base-patch32";
   const DET_THRESH = 0.55;
   const MAX_INDEX  = 400;
-  // Multiple CDN candidates, tried in order until one imports successfully.
   const CDN_URLS = [
     "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0",
     "https://unpkg.com/@huggingface/transformers@3.0.0",
     "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"
   ];
+  const HUMAN_CDNS = [
+    "https://cdn.jsdelivr.net/npm/@vladmandic/human/dist/human.esm.js",
+    "https://unpkg.com/@vladmandic/human/dist/human.esm.js"
+  ];
+  const HUMAN_MODELS = [
+    "https://cdn.jsdelivr.net/npm/@vladmandic/human/models/",
+    "https://cdn.jsdelivr.net/npm/@vladmandic/human-models/models/"
+  ];
+  /* text-to-image CLIP cosine is small in absolute terms, rescale to a friendly 0..1 */
+  const TEXT_LO = 0.15, TEXT_HI = 0.30;
+  const DEFAULT_TH = { object:55, face:50, text:55 };
+
+  /* ---------- COCO classes the detector knows, plus animal / object synonyms ---------- */
+  const COCO_CLASSES = ["person","bicycle","car","motorcycle","airplane","bus","train","truck","boat",
+    "traffic light","fire hydrant","stop sign","parking meter","bench","bird","cat","dog","horse","sheep",
+    "cow","elephant","bear","zebra","giraffe","backpack","umbrella","handbag","tie","suitcase","frisbee",
+    "skis","snowboard","sports ball","kite","baseball bat","baseball glove","skateboard","surfboard",
+    "tennis racket","bottle","wine glass","cup","fork","knife","spoon","bowl","banana","apple","sandwich",
+    "orange","broccoli","carrot","hot dog","pizza","donut","cake","chair","couch","potted plant","bed",
+    "dining table","toilet","tv","laptop","mouse","remote","keyboard","cell phone","microwave","oven",
+    "toaster","sink","refrigerator","book","clock","vase","scissors","teddy bear","hair drier","toothbrush"];
+  const COCO_SET = new Set(COCO_CLASSES);
+  const SYNONYMS = {
+    puppy:"dog", doggy:"dog", hound:"dog", pup:"dog",
+    kitten:"cat", kitty:"cat", feline:"cat",
+    goose:"bird", geese:"bird", duck:"bird", eagle:"bird", owl:"bird", hawk:"bird", pigeon:"bird",
+    parrot:"bird", chicken:"bird", hen:"bird", rooster:"bird", sparrow:"bird", seagull:"bird",
+    swan:"bird", penguin:"bird", crow:"bird", robin:"bird", finch:"bird", dove:"bird", peacock:"bird",
+    donkey:"horse", mule:"horse", pony:"horse", foal:"horse", stallion:"horse", mare:"horse",
+    calf:"cow", bull:"cow", cattle:"cow", ox:"cow", buffalo:"cow",
+    lamb:"sheep", ram:"sheep", ewe:"sheep", goat:"sheep",
+    automobile:"car", auto:"car", sedan:"car", suv:"car",
+    bike:"bicycle", cycle:"bicycle",
+    plane:"airplane", aeroplane:"airplane", jet:"airplane", aircraft:"airplane",
+    motorbike:"motorcycle", scooter:"motorcycle",
+    sofa:"couch", settee:"couch",
+    television:"tv", telly:"tv", monitor:"tv",
+    phone:"cell phone", smartphone:"cell phone", mobile:"cell phone",
+    man:"person", woman:"person", boy:"person", girl:"person", child:"person",
+    kid:"person", people:"person", human:"person", lady:"person", guy:"person"
+  };
+  function resolveClass(phrase){
+    const p = phrase.toLowerCase();
+    for(const cls of COCO_CLASSES){ if(cls.includes(" ") && p.includes(cls)) return cls; }
+    const words = p.split(/[^a-z]+/).filter(Boolean);
+    for(const w of words){ if(COCO_SET.has(w)) return w; if(SYNONYMS[w]) return SYNONYMS[w]; }
+    for(const w of words){
+      if(w.length>3 && w.endsWith("s")){
+        const s=w.slice(0,-1);
+        if(COCO_SET.has(s)) return s; if(SYNONYMS[s]) return SYNONYMS[s];
+      }
+    }
+    return null;
+  }
 
   /* ---------- state ---------- */
-  let TF = null;                 // the loaded transformers module
-  let detector = null, embedder = null, device = null;
+  let TF = null, detector = null, device = null;
+  let clipProcessor=null, clipVision=null, clipTokenizer=null, clipText=null;
+  let human = null;
   let queryDetections = [];
-  let selected = null;
+  let selected = null;              // { mode, label, cropURL?, phrase?, detectClass?, embedding?, textEmbedding?, faceEmbedding? }
   let folderHandle = null;
   let allResults = [];
   let queryNaturalW = 0, queryNaturalH = 0;
+  let curDefaultTh = 55;
 
   const $ = id => document.getElementById(id);
   const supported = (typeof window.showDirectoryPicker === "function");
 
-  /* ---------- lazy loader for Transformers.js ---------- */
+  /* ---------- lazy loaders ---------- */
   async function loadTF(){
     if(TF) return TF;
     let lastErr;
@@ -435,31 +432,96 @@
         if(mod && mod.pipeline){
           mod.env.allowLocalModels = false;
           mod.env.useBrowserCache  = true;
-          TF = mod;
-          return TF;
+          TF = mod; return TF;
         }
-      }catch(err){ lastErr = err; /* try next CDN */ }
+      }catch(err){ lastErr = err; }
     }
-    throw new Error("Could not load the AI library from any CDN. " +
-      "Check your internet connection on first run. " + (lastErr ? lastErr.message : ""));
+    throw new Error("Could not load the AI library from any CDN. Check your internet connection on first run. " + (lastErr ? lastErr.message : ""));
   }
   async function pickDevice(){
     try{ if(navigator.gpu && await navigator.gpu.requestAdapter()) return "webgpu"; }catch(e){}
     return "wasm";
   }
+  async function fromPretrained(cls, model){
+    if(!device) device = await pickDevice();
+    try{ return await cls.from_pretrained(model, { device }); }
+    catch(e){ return await cls.from_pretrained(model); }
+  }
   async function ensureDetector(){
     if(detector) return detector;
     await loadTF();
     if(!device) device = await pickDevice();
-    detector = await TF.pipeline("object-detection", DET_MODEL, { device });
+    try{ detector = await TF.pipeline("object-detection", DET_MODEL, { device }); }
+    catch(e){ detector = await TF.pipeline("object-detection", DET_MODEL); }
     return detector;
   }
-  async function ensureEmbedder(){
-    if(embedder) return embedder;
+  async function ensureCLIP(){
+    if(clipVision && clipText) return;
     await loadTF();
-    if(!device) device = await pickDevice();
-    embedder = await TF.pipeline("image-feature-extraction", CLIP_MODEL, { device });
-    return embedder;
+    if(!clipProcessor) clipProcessor = await TF.AutoProcessor.from_pretrained(CLIP_MODEL);
+    if(!clipVision)    clipVision    = await fromPretrained(TF.CLIPVisionModelWithProjection, CLIP_MODEL);
+    if(!clipTokenizer) clipTokenizer = await TF.AutoTokenizer.from_pretrained(CLIP_MODEL);
+    if(!clipText)      clipText      = await fromPretrained(TF.CLIPTextModelWithProjection, CLIP_MODEL);
+  }
+  async function ensureHuman(){
+    if(human) return human;
+    let mod, lastErr;
+    for(const url of HUMAN_CDNS){
+      try{ mod = await import(url); if(mod) break; }catch(err){ lastErr = err; }
+    }
+    if(!mod) throw new Error("Could not load the face recognition library. " + (lastErr ? lastErr.message : ""));
+    const H = mod.Human || mod.default || (mod.default && mod.default.Human);
+    if(!H) throw new Error("Face recognition library loaded but no Human export was found.");
+    let created = null, loadErr;
+    for(const base of HUMAN_MODELS){
+      try{
+        created = new H({
+          modelBasePath: base, debug:false, cacheModels:true,
+          face:{ enabled:true, detector:{ rotation:true, maxDetected:15, return:false },
+                 mesh:{ enabled:true }, iris:{ enabled:false }, description:{ enabled:true },
+                 emotion:{ enabled:false }, antispoof:{ enabled:false }, liveness:{ enabled:false } },
+          body:{ enabled:false }, hand:{ enabled:false }, object:{ enabled:false }, gesture:{ enabled:false }
+        });
+        await created.load();
+        break;
+      }catch(err){ loadErr = err; created = null; }
+    }
+    if(!created) throw new Error("Could not load the face models. " + (loadErr ? loadErr.message : ""));
+    human = created;
+    try{ await human.warmup(); }catch(e){}
+    return human;
+  }
+
+  /* ---------- embedding helpers ---------- */
+  function normalize(v){ let n=0; for(const x of v) n+=x*x; n=Math.sqrt(n)||1; return v.map(x=>x/n); }
+  function cosine(a,b){ let s=0; for(let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
+  async function embedImageCLIP(src){
+    await ensureCLIP();
+    const img = await TF.RawImage.read(src);
+    const inputs = await clipProcessor(img);
+    const out = await clipVision(inputs);
+    return normalize(Array.from(out.image_embeds.data));
+  }
+  async function embedTextCLIP(text){
+    await ensureCLIP();
+    const inputs = clipTokenizer([text], { padding:true, truncation:true });
+    const out = await clipText(inputs);
+    return normalize(Array.from(out.text_embeds.data));
+  }
+  function rescaleText(cos){ let x=(cos-TEXT_LO)/(TEXT_HI-TEXT_LO); return x<0?0:(x>1?1:x); }
+
+  async function faceEmbeddingFrom(src){
+    const h = await ensureHuman();
+    const imgEl = await loadImg(src);
+    const res = await h.detect(imgEl);
+    if(!res || !res.face || res.face.length===0) return null;
+    let best = null, bestArea = -1;
+    for(const f of res.face){
+      if(!f.embedding) continue;
+      const area = (f.box && f.box.length>=4) ? (f.box[2]*f.box[3]) : 0;
+      if(area > bestArea){ bestArea = area; best = f.embedding; }
+    }
+    return best;
   }
 
   /* ---------- generic helpers ---------- */
@@ -480,17 +542,14 @@
     c.getContext("2d").drawImage(imgEl,x,y,w,h,0,0,w,h);
     return c.toDataURL("image/png");
   }
-  async function embed(src){
-    const ex = await ensureEmbedder();
-    const out = await ex(src);
-    let v = out.data ? Array.from(out.data) : out.tolist()[0];
-    let n=0; for(const x of v) n+=x*x; n=Math.sqrt(n)||1;
-    return v.map(x=>x/n);
-  }
-  function cosine(a,b){ let s=0; for(let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
   function loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
+  function liveMatchCount(){
+    const th=(+$("threshold").value)/100; let c=0;
+    for(const r of allResults){ if(r.score>=th) c++; } return c;
+  }
+  function setThreshold(v){ curDefaultTh=v; $("threshold").value=v; $("thVal").textContent=v+"%"; }
 
-  /* ================= SCREEN 1: upload (wired synchronously) ================= */
+  /* ================= SCREEN 1: upload or describe ================= */
   if(!supported) $("unsupported").style.display = "block";
   $("uploadBtn").addEventListener("click", ()=> $("fileInput").click());
   $("dropzone").addEventListener("click", e=>{ if(e.target.id!=="uploadBtn" && e.target.closest("#uploadBtn")===null) $("fileInput").click(); });
@@ -498,6 +557,17 @@
   ["dragover","dragenter"].forEach(ev=> $("dropzone").addEventListener(ev, e=>{ e.preventDefault(); $("dropzone").classList.add("drag"); }));
   ["dragleave","drop"].forEach(ev=> $("dropzone").addEventListener(ev, e=>{ e.preventDefault(); $("dropzone").classList.remove("drag"); }));
   $("dropzone").addEventListener("drop", e=>{ const f=e.dataTransfer.files[0]; if(f && f.type.startsWith("image/")) handleUpload(f); });
+
+  /* text description entry */
+  $("descBtn").addEventListener("click", startDescribe);
+  $("descInput").addEventListener("keydown", e=>{ if(e.key==="Enter") startDescribe(); });
+  function startDescribe(){
+    const phrase = ($("descInput").value || "").trim();
+    if(!phrase) { $("descInput").focus(); return; }
+    const cls = resolveClass(phrase);
+    selected = { mode:"text", label:phrase, phrase:phrase, detectClass:cls };
+    enterFolderStep();
+  }
 
   async function handleUpload(file){
     const url = URL.createObjectURL(file);
@@ -531,11 +601,10 @@
       st.className = "statusPill err";
       st.innerHTML = "&#9888; " + (err && err.message ? err.message : err) +
         "<br><small>Make sure you have internet on the first run and are using Microsoft Edge or Chrome. "+
-        "Also, open the file through a local server or a hosted URL, not by double-clicking (file://).</small>";
+        "Also, open the file through a hosted URL, not by double-clicking (file://).</small>";
     }
   }
 
-  /* percentage-based overlay, drawn after image has real width (fixes zoom bug) */
   function drawBoxes(){
     const frame = $("imgFrame");
     frame.querySelectorAll(".box").forEach(b=>b.remove());
@@ -568,50 +637,90 @@
       list.appendChild(c);
     });
   }
-  async function selectCrop(i){
+  function selectCrop(i){
     document.querySelectorAll("#cropList .crop").forEach(el=> el.classList.toggle("sel", +el.dataset.i===i));
     const d=queryDetections[i];
+    const isPerson = (d.label==="person");
+    selected={ mode:(isPerson?"face":"object"), label:d.label, cropURL:d.cropURL };
     $("selName").textContent=d.label; $("selThumb").src=d.cropURL;
-    $("selDesc").textContent="We will look for images that contain a "+d.label+".";
-    const btn=$("toFolderBtn");
-    btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Preparing subject&hellip;';
-    try{
-      const emb=await embed(d.cropURL);
-      selected={ label:d.label, cropURL:d.cropURL, embedding:emb };
-    }catch(err){
-      console.error(err);
-      selected={ label:d.label, cropURL:d.cropURL, embedding:null };
-    }
-    btn.disabled=false; btn.innerHTML='Continue to choose folder &#8594;';
+    $("selDesc").textContent = isPerson
+      ? "We will look for the same person by matching faces."
+      : "We will look for images that contain a "+d.label+".";
+    $("toFolderBtn").disabled=false;
   }
   $("backTo1").addEventListener("click", ()=> goStep(1));
-  $("toFolderBtn").addEventListener("click", ()=>{
-    if(!selected) return;
-    $("chip3Img").src=selected.cropURL; $("chip3Name").textContent=selected.label; goStep(3);
-  });
+  $("toFolderBtn").addEventListener("click", ()=>{ if(selected) enterFolderStep(); });
 
   /* ================= SCREEN 3: choose folder ================= */
-  $("chip3Change").addEventListener("click", ()=> goStep(2));
+  function enterFolderStep(){
+    if(selected.mode==="text"){
+      $("chip3Img").style.display="none";
+      $("chip3Name").textContent=selected.phrase;
+    }else{
+      $("chip3Img").style.display="";
+      $("chip3Img").src=selected.cropURL;
+      $("chip3Name").textContent=selected.label;
+    }
+    goStep(3);
+  }
+  $("chip3Change").addEventListener("click", ()=> goStep(selected && selected.mode==="text" ? 1 : 2));
   $("folderZone").addEventListener("click", e=>{ if(e.target.id!=="pickFolderBtn" && e.target.closest("#pickFolderBtn")===null) $("pickFolderBtn").click(); });
   $("pickFolderBtn").addEventListener("click", startSearch);
+
+  function displayName(){ return selected.mode==="text" ? ('"'+selected.phrase+'"') : selected.label; }
 
   async function startSearch(){
     if(!supported){ alert("Folder access needs Microsoft Edge, Chrome, or Opera on desktop."); return; }
     try{ folderHandle = await window.showDirectoryPicker(); }catch(e){ return; }
     goStep(4);
-    $("ctxImg").src=selected.cropURL; $("ctxName").textContent=selected.label;
-    $("ctxFolder").textContent=folderHandle.name;
+    if(selected.mode==="text"){ $("ctxImg").style.display="none"; }
+    else { $("ctxImg").style.display=""; $("ctxImg").src=selected.cropURL; }
+    $("ctxName").textContent = displayName();
+    $("ctxFolder").textContent = folderHandle.name;
+    $("ctxCount").textContent = "0";
+    $("searchNote").style.display="none";
     $("resultsLayout").style.display="none";
     $("idxProgress").style.display="block";
-    $("idxBar").style.width="0%"; $("idxLabel").textContent="Scanning folders\u2026";
+    $("idxBar").style.width="0%"; $("idxLabel").textContent="Preparing models\u2026";
     allResults=[];
+
+    /* prepare per mode */
     try{
-      if(!selected.embedding) selected.embedding = await embed(selected.cropURL);
-      await ensureDetector(); await ensureEmbedder();
+      if(selected.mode==="text"){
+        setThreshold(DEFAULT_TH.text);
+        await ensureCLIP();
+        if(selected.detectClass) await ensureDetector();
+        selected.textEmbedding = await embedTextCLIP(selected.phrase);
+        showSearchNote(selected.detectClass
+          ? ("Searching for "+displayName()+" by detecting "+selected.detectClass+" and ranking by your description.")
+          : ("This description is not a directly detectable object, so results use whole-image matching and may be looser."));
+      }else if(selected.mode==="face"){
+        setThreshold(DEFAULT_TH.face);
+        $("idxLabel").textContent="Loading the face recognition model (first run downloads it once)\u2026";
+        let faceEmb=null;
+        try{ faceEmb = await faceEmbeddingFrom(selected.cropURL); }catch(e){ faceEmb=null; }
+        if(faceEmb){
+          selected.faceEmbedding = faceEmb;
+          showSearchNote("Matching by face. Only images with a clearly visible face similar to the selected person are shown.");
+        }else{
+          selected.mode="object";
+          setThreshold(DEFAULT_TH.object);
+          await ensureCLIP(); await ensureDetector();
+          selected.embedding = await embedImageCLIP(selected.cropURL);
+          showSearchNote("No clear face was found in the selected person, so results fall back to matching any person. For identity matching, pick an image where the face is clearly visible.");
+        }
+      }else{ /* object */
+        setThreshold(DEFAULT_TH.object);
+        await ensureCLIP(); await ensureDetector();
+        selected.embedding = await embedImageCLIP(selected.cropURL);
+      }
     }catch(err){
-      $("idxLabel").innerHTML="&#9888; Could not load the AI models. Check your connection and use Edge/Chrome.";
+      console.error(err);
+      $("idxLabel").innerHTML="&#9888; Could not load the required models. Check your connection and use Edge or Chrome.";
       return;
     }
+
+    $("idxLabel").textContent="Scanning folders\u2026";
     const files=[]; await walk(folderHandle,"",files);
     const total=Math.min(files.length,MAX_INDEX);
     if(total===0){ $("idxLabel").textContent="No images found in that folder."; return; }
@@ -621,15 +730,16 @@
       try{
         const file=await f.handle.getFile();
         const url=URL.createObjectURL(file);
-        const best=await scoreImage(url);
+        const best=await scoreDispatch(url);
         if(best!==null){ allResults.push({ relPath:f.relPath, thumbURL:url, file, score:best }); kept++; }
         else URL.revokeObjectURL(url);
-      }catch(e){ /* skip */ }
+      }catch(e){ /* skip unreadable */ }
       const pct=Math.round(((i+1)/total)*100);
       $("idxBar").style.width=pct+"%";
-      $("idxLabel").textContent="Scanning for "+selected.label+", "+(i+1)+" of "+total+
-        "  ("+kept+" with a "+selected.label+" so far)"+
+      $("idxLabel").textContent="Scanning for "+displayName()+", "+(i+1)+" of "+total+
+        "  ("+kept+" kept so far)"+
         (files.length>MAX_INDEX?"  [first "+MAX_INDEX+" of "+files.length+"]":"");
+      $("ctxCount").textContent=liveMatchCount();
       if(i%3===0) await new Promise(r=>setTimeout(r,0));
     }
     allResults.sort((a,b)=> b.score-a.score);
@@ -638,20 +748,67 @@
     applyThreshold();
   }
 
-  /* strict filter: image must actually contain the chosen class, else excluded */
-  async function scoreImage(url){
+  function showSearchNote(msg){ const n=$("searchNote"); n.textContent=msg; n.style.display="block"; }
+
+  async function scoreDispatch(url){
+    if(selected.mode==="face")  return await scoreImageFace(url);
+    if(selected.mode==="text")  return selected.detectClass
+                                   ? await scoreImageTextStrict(url)
+                                   : await scoreImageTextWhole(url);
+    return await scoreImageObject(url);
+  }
+
+  /* object / animal image path: strict, must contain the class */
+  async function scoreImageObject(url){
     const dets=await detector(url,{ threshold:DET_THRESH });
     const targets=dets.filter(d=> d.label===selected.label);
     if(targets.length===0) return null;
     const imgEl=await loadImg(url);
     let best=0;
     for(const d of targets){
-      const emb=await embed(cropToURL(imgEl,d.box));
+      const emb=await embedImageCLIP(cropToURL(imgEl,d.box));
       const sim=cosine(selected.embedding,emb);
       if(sim>best) best=sim;
     }
     return best;
   }
+  /* person image path: face identity match */
+  async function scoreImageFace(url){
+    const h=await ensureHuman();
+    let imgEl; try{ imgEl=await loadImg(url); }catch(e){ return null; }
+    const res=await h.detect(imgEl);
+    if(!res || !res.face || res.face.length===0) return null;
+    let best=0;
+    for(const f of res.face){
+      if(!f.embedding) continue;
+      let sim=0;
+      try{ sim = h.match.similarity(selected.faceEmbedding, f.embedding); }catch(e){ sim = 1 - euclid(selected.faceEmbedding, f.embedding); }
+      if(sim>best) best=sim;
+    }
+    return best>0 ? best : null;
+  }
+  function euclid(a,b){ let s=0; for(let i=0;i<a.length;i++){ const d=a[i]-b[i]; s+=d*d; } return Math.sqrt(s); }
+
+  /* text path, strict: detect the mapped class, rank crops by text similarity */
+  async function scoreImageTextStrict(url){
+    const dets=await detector(url,{ threshold:DET_THRESH });
+    const targets=dets.filter(d=> d.label===selected.detectClass);
+    if(targets.length===0) return null;
+    const imgEl=await loadImg(url);
+    let best=0;
+    for(const d of targets){
+      const emb=await embedImageCLIP(cropToURL(imgEl,d.box));
+      const sim=rescaleText(cosine(selected.textEmbedding,emb));
+      if(sim>best) best=sim;
+    }
+    return best;
+  }
+  /* text path, whole image fallback for classes the detector does not know */
+  async function scoreImageTextWhole(url){
+    const emb=await embedImageCLIP(url);
+    return rescaleText(cosine(selected.textEmbedding,emb));
+  }
+
   async function walk(dirHandle, prefix, out){
     for await (const entry of dirHandle.values()){
       if(entry.kind==="file"){
@@ -665,7 +822,7 @@
 
   /* ================= results + threshold ================= */
   $("threshold").addEventListener("input", e=>{ $("thVal").textContent=e.target.value+"%"; applyThreshold(); });
-  $("clearFilters").addEventListener("click", ()=>{ $("threshold").value=55; $("thVal").textContent="55%"; applyThreshold(); });
+  $("clearFilters").addEventListener("click", ()=>{ setThreshold(curDefaultTh); applyThreshold(); });
   function applyThreshold(){
     const th=(+$("threshold").value)/100;
     const shown=allResults.filter(r=> r.score>=th);
@@ -713,9 +870,19 @@
   function resetAll(){
     allResults.forEach(r=>{ try{URL.revokeObjectURL(r.thumbURL);}catch(e){} });
     allResults=[]; selected=null; queryDetections=[]; folderHandle=null;
-    $("fileInput").value=""; $("resultsGrid").innerHTML=""; goStep(1);
+    $("fileInput").value=""; $("resultsGrid").innerHTML="";
+    $("descInput").value="";
+    $("ctxCount").textContent="0";
+    $("ctxName").textContent="\u2026";
+    $("ctxFolder").textContent="\u2026";
+    $("searchNote").style.display="none";
+    $("showing").textContent="Showing 0 matches";
+    setThreshold(55);
+    $("resultsLayout").style.display="none";
+    goStep(1);
   }
 })();
+
 </script>
 </body>
 </html>
