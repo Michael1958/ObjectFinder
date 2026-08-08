@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ObjectFinder</title>
+<script>
+  /* Apply the saved or system theme before paint to avoid a flash. */
+  (function(){
+    try{
+      var saved = localStorage.getItem("objectfinder-theme");
+      var theme = saved || ((window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    }catch(e){ document.documentElement.setAttribute("data-theme","light"); }
+  })();
+</script>
+<style>
+  /* ============================================================
+     PALETTE , defined once here as CSS variables.
+     Modern orange theme with a light and a dark version.
+     ============================================================ */
+  :root{
+    color-scheme: light;
+    --primary:#EA580C;          /* warm primary orange */
+    --primary-dark:#C2410C;     /* deeper orange for hover / pressed */
+    --primary-glow:rgba(234,88,12,.25);
+    --heading:#9A3412;          /* emphasised names / headings */
+
+    --header-bg:linear-gradient(90deg,#C2410C 0%,#EA580C 100%);
+    --header-text:#ffffff;
+    --header-muted:#FDE3CB;
+    --logo-bg:rgba(255,255,255,.20);
+
+    --bg:#FBF6F1;
+    --card:#ffffff;
+    --soft-bg:#FBF3EC;
+    --border:#EFE3D8;
+    --border-strong:#E0CBB8;
+    --dash-border:#F0C79B;
+
+    --text:#2B2018;
+    --muted:#8C7A6B;
+
+    --pill-bg:#FFEDD5;
+    --pill-text:#9A3412;
+
+    --tips-bg:#FFF7ED;
+    --tips-border:#FBD9AE;
+    --tips-text:#7A4A1E;
+
+    --secondary-bg:#F5EDE6;
+    --secondary-hover:#ECE0D6;
+    --menu-hover:#FBF3EC;
+
+    --track:#EFE3D8;
+    --dot-inactive:#D9C9BB;
+    --img-placeholder:#E7DED6;
+
+    --box-object:#EA580C;
+    --box-person:#2563EB;
+
+    --ok:#107c10;
+    --warn:#c0392b;
+    --err-bg:#FFF4F1; --err-border:#F3C6BC; --err-text:#A12626;
+    --status-bg:#FFF8E6; --status-border:#F0DCA0; --status-text:#7A5C00;
+
+    --shadow:0 10px 28px rgba(120,60,10,.10);
+    --lightbox-bg:rgba(30,18,8,.85);
+  }
+  [data-theme="dark"]{
+    color-scheme: dark;
+    --primary:#FB923C;
+    --primary-dark:#F97316;
+    --primary-glow:rgba(251,146,60,.30);
+    --heading:#FDBA74;
+
+    --header-bg:linear-gradient(90deg,#241812 0%,#3A271A 100%);
+    --header-text:#FFF3E8;
+    --header-muted:#E8B98A;
+    --logo-bg:rgba(255,255,255,.14);
+
+    --bg:#17120E;
+    --card:#221A14;
+    --soft-bg:#271D16;
+    --border:#3A2E24;
+    --border-strong:#4A3B2E;
+    --dash-border:#6B4A2E;
+
+    --text:#F2E9E1;
+    --muted:#B09C8C;
+
+    --pill-bg:rgba(251,146,60,.14);
+    --pill-text:#FB923C;
+
+    --tips-bg:#241A12;
+    --tips-border:#4A3722;
+    --tips-text:#E8B98A;
+
+    --secondary-bg:#2E241C;
+    --secondary-hover:#3A2E24;
+    --menu-hover:#2E241C;
+
+    --track:#3A2E24;
+    --dot-inactive:#4A3B2E;
+    --img-placeholder:#2E241C;
+
+    --box-object:#FB923C;
+    --box-person:#60A5FA;
+
+    --ok:#4ade80;
+    --warn:#f87171;
+    --err-bg:#3A1E19; --err-border:#6B342A; --err-text:#F7A99A;
+    --status-bg:#332811; --status-border:#5C4A22; --status-text:#F0D08A;
+
+    --shadow:0 10px 28px rgba(0,0,0,.45);
+    --lightbox-bg:rgba(0,0,0,.90);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--text);
+    display:flex; flex-direction:column; min-height:100vh;
+    transition:background .2s ease, color .2s ease;
+  }
+  .topbar{
+    background:var(--header-bg); color:var(--header-text);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; flex:0 0 auto;
+  }
+  .brand{display:flex; align-items:center; gap:12px; font-size:20px; font-weight:600;}
+  .logo{width:38px; height:38px; border-radius:50%; background:var(--logo-bg); display:flex; align-items:center; justify-content:center; font-size:19px;}
+  .topbar-right{display:flex; align-items:center; gap:16px;}
+  .credit{font-size:13px; color:var(--header-muted);}
+  .credit b{color:var(--header-text); font-weight:600;}
+  .themeToggle{
+    width:38px; height:38px; border-radius:50%;
+    border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.12);
+    color:var(--header-text); cursor:pointer; font-size:18px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .15s, transform .15s;
+  }
+  .themeToggle:hover{background:rgba(255,255,255,.24); transform:scale(1.05);}
+  .wrap{flex:1 0 auto; max-width:1180px; width:100%; margin:0 auto; padding:24px 20px 30px;}
+  .screen{display:none; animation:fade .25s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);}to{opacity:1; transform:none;}}
+  h1{margin:0 0 6px; font-size:24px; text-align:center;}
+  .sub{color:var(--muted); margin:0 0 22px; text-align:center;}
+  .btn{background:var(--primary); color:#fff; border:none; cursor:pointer; border-radius:9px; padding:13px 26px; font-size:15px; font-weight:600; display:inline-flex; align-items:center; gap:9px; transition:background .15s;}
+  .btn:hover{background:var(--primary-dark);}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .btn.secondary{background:var(--secondary-bg); color:var(--text);}
+  .btn.secondary:hover{background:var(--secondary-hover);}
+  .link{background:none; border:none; color:var(--primary); cursor:pointer; font-size:14px; font-weight:600;}
+  .link:hover{text-decoration:underline;}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); padding:26px 28px;}
+  .dropzone{border:2px dashed var(--dash-border); border-radius:12px; padding:38px 20px; text-align:center; cursor:pointer; transition:background .15s,border-color .15s;}
+  .dropzone:hover,.dropzone.drag{background:var(--soft-bg); border-color:var(--primary);}
+  .dropzone .icon{font-size:44px; color:var(--primary);}
+  .dropzone .hint{color:var(--muted); font-size:14px; margin-top:10px;}
+  .privacy{margin:18px auto 0; display:flex; gap:8px; align-items:center; width:max-content; background:var(--pill-bg); color:var(--pill-text); padding:8px 14px; border-radius:20px; font-size:13px; font-weight:600;}
+  .unsupported{display:none; margin:16px auto 0; max-width:640px; text-align:left; background:var(--err-bg); border:1px solid var(--err-border); color:var(--err-text); padding:14px 16px; border-radius:10px; font-size:14px; line-height:1.5;}
+  .cols{display:grid; grid-template-columns:1.55fr 1fr; gap:22px; align-items:start;}
+  @media(max-width:860px){.cols{grid-template-columns:1fr;}}
+  .imgFrame{position:relative; display:block; width:100%; border-radius:12px; overflow:hidden; background:var(--img-placeholder); line-height:0;}
+  .imgFrame img{display:block; width:100%; height:auto;}
+  .box{position:absolute; border:3px solid var(--box-object); border-radius:4px; pointer-events:none; box-sizing:border-box;}
+  .box.person{border-color:var(--box-person);}
+  .box .tag{position:absolute; top:-21px; left:-3px; font-size:11px; line-height:1.4; font-weight:700; color:#fff; background:var(--box-object); padding:1px 7px; border-radius:4px; white-space:nowrap;}
+  .box.person .tag{background:var(--box-person);}
+  .subjectsRow{margin-top:16px;}
+  .subjectsRow h3{font-size:13px; color:var(--muted); font-weight:600; margin:0 0 10px; text-transform:uppercase; letter-spacing:.5px;}
+  .crops{display:flex; gap:14px; flex-wrap:wrap;}
+  .crop{width:132px; border:2px solid var(--border); border-radius:11px; overflow:hidden; cursor:pointer; background:var(--card); position:relative; transition:border-color .15s,box-shadow .15s;}
+  .crop:hover{border-color:var(--border-strong);}
+  .crop.sel{border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-glow);}
+  .crop img{display:block; width:100%; height:110px; object-fit:cover; background:var(--img-placeholder);}
+  .crop .lbl{text-align:center; padding:8px 4px; font-weight:600; text-transform:capitalize;}
+  .crop .check{position:absolute; top:7px; right:7px; width:22px; height:22px; border-radius:50%; background:var(--primary); color:#fff; display:none; align-items:center; justify-content:center; font-size:13px;}
+  .crop.sel .check{display:flex;}
+  .sidePanel h3{margin:0 0 12px; font-size:16px;}
+  .selBox{display:flex; gap:12px; align-items:center; background:var(--soft-bg); border:1px solid var(--border); border-radius:10px; padding:12px;}
+  .selBox img{width:60px; height:60px; border-radius:8px; object-fit:cover; background:var(--img-placeholder);}
+  .tips{background:var(--tips-bg); border:1px solid var(--tips-border); border-radius:10px; padding:14px 16px; margin-top:14px; font-size:14px; color:var(--tips-text);}
+  .tips ul{margin:8px 0 0; padding-left:18px; line-height:1.7;}
+  .chip{display:flex; gap:10px; align-items:center; width:max-content; margin:0 auto 18px; background:var(--card); border:1px solid var(--border); border-radius:30px; padding:6px 14px 6px 6px; box-shadow:0 3px 10px rgba(0,0,0,.05);}
+  .chip img{width:34px; height:34px; border-radius:50%; object-fit:cover; background:var(--img-placeholder);}
+  .chip b{color:var(--primary);}
+  .ctxBar{display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:18px;}
+  .ctxBar .mini{width:40px; height:40px; border-radius:8px; object-fit:cover; background:var(--img-placeholder);}
+  .ctxBar .txt{font-size:15px;}
+  .ctxBar .txt b{color:var(--heading);}
+  .resultsLayout{display:grid; grid-template-columns:230px 1fr; gap:20px; align-items:start;}
+  @media(max-width:820px){.resultsLayout{grid-template-columns:1fr;}}
+  .filters{background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); padding:18px;}
+  .filters h3{margin:0 0 16px; font-size:16px;}
+  .filters label{font-size:13px; font-weight:600; display:block; margin-bottom:6px;}
+  .filters .val{float:right; color:var(--primary); font-weight:700;}
+  input[type=range]{width:100%; accent-color:var(--primary);}
+  .rangeScale{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:4px;}
+  .showing{font-size:13px; color:var(--muted); margin:14px 0;}
+  .grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));}
+  .rcard{background:var(--card); border:1px solid var(--border); border-radius:11px; overflow:hidden; box-shadow:0 3px 10px rgba(0,0,0,.05); position:relative;}
+  .rcard .thumb{width:100%; aspect-ratio:1/1; object-fit:cover; background:var(--img-placeholder); display:block; cursor:pointer;}
+  .rcard .score{position:absolute; top:8px; right:8px; background:var(--primary); color:#fff; font-size:12px; font-weight:700; padding:3px 8px; border-radius:6px;}
+  .rcard .foot{display:flex; align-items:center; gap:6px; padding:8px 6px 8px 9px;}
+  .rcard .path{flex:1; font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .dots{border:none; background:none; cursor:pointer; font-size:18px; color:var(--muted); line-height:1; padding:2px 6px; border-radius:6px;}
+  .dots:hover{background:var(--menu-hover);}
+  .menu{position:absolute; right:8px; bottom:40px; background:var(--card); border:1px solid var(--border); border-radius:9px; box-shadow:0 10px 26px rgba(0,0,0,.16); overflow:hidden; display:none; z-index:5; min-width:150px;}
+  .menu.open{display:block;}
+  .menu button{display:flex; gap:9px; align-items:center; width:100%; border:none; background:none; padding:10px 14px; font-size:14px; cursor:pointer; text-align:left; color:var(--text);}
+  .menu button:hover{background:var(--menu-hover);}
+  .progress{margin:20px 0;}
+  .bar{height:10px; background:var(--track); border-radius:6px; overflow:hidden;}
+  .bar > i{display:block; height:100%; width:0%; background:var(--primary); transition:width .12s linear;}
+  .progress .label{font-size:13px; color:var(--muted); margin-top:8px; text-align:center;}
+  .statusPill{display:none; margin:14px auto 0; width:max-content; max-width:92%; background:var(--status-bg); border:1px solid var(--status-border); color:var(--status-text); padding:9px 15px; border-radius:9px; font-size:13px; text-align:center; line-height:1.5;}
+  .statusPill.err{background:var(--err-bg); border-color:var(--err-border); color:var(--err-text);}
+  .spinner{width:18px;height:18px;border:3px solid var(--track);border-top-color:var(--primary);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .stepper{max-width:900px; margin:26px auto 0; display:flex; justify-content:space-between; position:relative;}
+  .stepper::before{content:""; position:absolute; top:16px; left:8%; right:8%; height:3px; background:var(--track); z-index:0;}
+  .step{position:relative; z-index:1; text-align:center; flex:1;}
+  .step .dot{width:34px; height:34px; border-radius:50%; background:var(--dot-inactive); color:#fff; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-weight:700; font-size:14px;}
+  .step .t{font-size:13px; font-weight:600;}
+  .step .s{font-size:11px; color:var(--muted);}
+  .step.done .dot{background:var(--primary);}
+  .step.active .dot{background:var(--primary); box-shadow:0 0 0 4px var(--primary-glow);}
+  .step.active .s{color:var(--primary);}
+  .lightbox{position:fixed; inset:0; background:var(--lightbox-bg); display:none; align-items:center; justify-content:center; z-index:50; padding:30px;}
+  .lightbox.open{display:flex;}
+  .lightbox .inner{max-width:92vw; max-height:92vh; text-align:center;}
+  .lightbox img{max-width:92vw; max-height:82vh; border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .lightbox .cap{color:#f2e6da; margin-top:12px; font-size:14px;}
+  .lightbox .close{position:absolute; top:20px; right:26px; color:#fff; font-size:34px; cursor:pointer; background:none; border:none;}
+  footer{flex:0 0 auto; text-align:center; color:var(--muted); font-size:12px; padding:16px; border-top:1px solid var(--border);}
+  .modelNote{max-width:900px; margin:16px auto 0; background:var(--soft-bg); border:1px dashed var(--dash-border); border-radius:10px; padding:11px 16px; font-size:12.5px; color:var(--muted);}
+  .modelNote b{color:var(--heading);}
+  /* global error banner */
+  #errBanner{display:none; background:var(--err-bg); color:var(--err-text); border-bottom:1px solid var(--err-border); padding:10px 16px; font-size:13px; text-align:center;}
+</style>
+</head>
+<body>
+  <div id="errBanner"></div>
+  <header class="topbar">
+    <div class="brand"><div class="logo">&#128269;</div><span>ObjectFinder</span></div>
+    <div class="topbar-right">
+      <div class="credit">Created by: <b>Michael Gerontides</b></div>
+      <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode"><span id="themeIcon">&#9790;</span></button>
+    </div>
+  </header>
+  <main class="wrap">
+    <!-- ============ SCREEN 1 : UPLOAD ============ -->
+    <section class="screen active" id="screen1">
+      <div class="card" style="max-width:720px;margin:0 auto;">
+        <h1>Start by uploading an image</h1>
+        <p class="sub">Upload a photo that contains the subject you want to find.</p>
+        <div class="dropzone" id="dropzone">
+          <div class="icon">&#128247;</div>
+          <div><button class="btn" id="uploadBtn" type="button" style="margin-top:12px;"><span>&#11014;</span> Upload image</button></div>
+          <div class="hint">Drag and drop or browse. Your image never leaves your computer.</div>
+        </div>
+        <div class="privacy"><span>&#128274;</span> 100% offline, runs in your browser</div>
+        <div class="unsupported" id="unsupported">
+          <b>This browser can&rsquo;t open a folder later.</b><br>
+          The folder search needs the File System Access API (Microsoft Edge, Chrome, or Opera on desktop).
+          Firefox and Safari are not supported. Please use Edge or Chrome.
+        </div>
+        <input type="file" id="fileInput" accept="image/*" hidden />
+      </div>
+    </section>
+    <!-- ============ SCREEN 2 : SELECT SUBJECT ============ -->
+    <section class="screen" id="screen2">
+      <div style="max-width:340px;margin:0 auto 6px;"><button class="link" id="backTo1" type="button">&#8592; Back</button></div>
+      <h1>Which subject do you want to find?</h1>
+      <p class="sub">We detected the subjects in your image. Select the one you want to search for.</p>
+      <div id="detectStatus" class="statusPill" style="display:block;">
+        <span class="spinner"></span> Loading the detection model (first run downloads it once)&hellip;
+      </div>
+      <div class="card cols" id="detectPanel" style="display:none;">
+        <div>
+          <div class="imgFrame" id="imgFrame"><img id="queryImg" alt="query" /></div>
+          <div class="subjectsRow">
+            <h3>Detected subjects</h3>
+            <div class="crops" id="cropList"></div>
+          </div>
+        </div>
+        <div class="sidePanel">
+          <h3>Selected subject: <span id="selName" style="color:var(--primary);">&hellip;</span></h3>
+          <div class="selBox"><img id="selThumb" alt="selected"/><div id="selDesc" style="color:var(--muted);font-size:14px;">Pick a subject on the left.</div></div>
+          <div class="tips">
+            <b>How it works</b>
+            <ul>
+              <li>We search for images that contain a similar subject.</li>
+              <li>The subject can appear with other people or objects, not only alone.</li>
+              <li>Only images that actually contain your subject are shown.</li>
+            </ul>
+          </div>
+          <button class="btn" id="toFolderBtn" type="button" style="margin-top:16px;width:100%;justify-content:center;" disabled>Continue to choose folder &#8594;</button>
+        </div>
+      </div>
+    </section>
+    <!-- ============ SCREEN 3 : CHOOSE FOLDER ============ -->
+    <section class="screen" id="screen3">
+      <div class="chip"><img id="chip3Img" alt=""/><span>Searching for: <b id="chip3Name">&hellip;</b></span><button class="link" id="chip3Change" type="button" style="font-size:13px;">Change</button></div>
+      <div class="card" style="max-width:760px;margin:0 auto;text-align:center;">
+        <h1>Choose a folder to search</h1>
+        <p class="sub">Select a folder on your computer. We scan it and all its subfolders for your subject.</p>
+        <div class="dropzone" id="folderZone">
+          <div class="icon">&#128193;</div>
+          <div><button class="btn" id="pickFolderBtn" type="button" style="margin-top:12px;"><span>&#128193;</span> Choose folder to search</button></div>
+          <div class="hint">Scans this folder and all subfolders. Your images never leave your computer.</div>
+        </div>
+        <div class="privacy"><span>&#128274;</span> 100% offline, runs in your browser</div>
+      </div>
+    </section>
+    <!-- ============ SCREEN 4 : RESULTS ============ -->
+    <section class="screen" id="screen4">
+      <div class="ctxBar">
+        <img class="mini" id="ctxImg" alt=""/>
+        <div class="txt">Searching for: <b id="ctxName">&hellip;</b></div>
+        <button class="link" id="newSearch" type="button">New search</button>
+        <div style="color:var(--muted);font-size:14px;">Scanned folder: <b id="ctxFolder" style="color:var(--heading);">&hellip;</b>, <span id="ctxCount">0</span> matches found</div>
+        <div style="flex:1;"></div>
+        <button class="link" id="startOver" type="button" style="color:var(--muted);">Start over</button>
+      </div>
+      <div class="progress" id="idxProgress">
+        <div class="bar"><i id="idxBar"></i></div>
+        <div class="label" id="idxLabel">Preparing&hellip;</div>
+      </div>
+      <div class="resultsLayout" id="resultsLayout" style="display:none;">
+        <aside class="filters">
+          <h3>Filter Results</h3>
+          <label>Similarity Threshold <span class="val" id="thVal">55%</span></label>
+          <input type="range" id="threshold" min="20" max="95" value="55" />
+          <div class="rangeScale"><span>20%</span><span>55%</span><span>95%</span></div>
+          <div class="showing" id="showing">Showing 0 matches</div>
+          <button class="btn secondary" id="clearFilters" type="button" style="width:100%;justify-content:center;margin-top:6px;">Reset threshold</button>
+        </aside>
+        <div>
+          <div class="grid" id="resultsGrid"></div>
+          <div id="noMatch" style="display:none;color:var(--muted);text-align:center;padding:30px;">No images passed the similarity threshold. Try lowering it.</div>
+        </div>
+      </div>
+    </section>
+    <div class="stepper" id="stepper">
+      <div class="step" data-step="1"><div class="dot">1</div><div class="t">Upload Image</div><div class="s">Upload a photo</div></div>
+      <div class="step" data-step="2"><div class="dot">2</div><div class="t">Select Subject</div><div class="s">Pick the subject</div></div>
+      <div class="step" data-step="3"><div class="dot">3</div><div class="t">Choose Folder</div><div class="s">Select a folder</div></div>
+      <div class="step" data-step="4"><div class="dot">4</div><div class="t">Results</div><div class="s">See matches</div></div>
+    </div>
+    <div class="modelNote">
+      <b>Note:</b> the subject detection and similarity models download once from a CDN the first time you upload an image (needs internet that first time), then run fully on your machine and are cached for offline reuse. Best in Microsoft Edge or Chrome.
+    </div>
+  </main>
+  <div class="lightbox" id="lightbox">
+    <button class="close" id="lbClose" type="button">&times;</button>
+    <div class="inner"><img id="lbImg" alt=""/><div class="cap" id="lbCap"></div></div>
+  </div>
+  <footer>ObjectFinder &middot; Created by Michael Gerontides</footer>
+<!--
+  IMPORTANT ARCHITECTURE NOTE:
+  This is a PLAIN script (not type="module"). All UI event listeners are attached
+  synchronously and DO NOT depend on the AI library loading. The Transformers.js
+  library is loaded LAZILY via dynamic import() only when the first image is
+  uploaded. If the CDN is unreachable, the UI still works and a clear on-screen
+  message is shown, the app is never left dead.
+-->
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- theme toggle ---------- */
+  const themeToggle = document.getElementById("themeToggle");
+  const themeIcon   = document.getElementById("themeIcon");
+  function refreshThemeIcon(){
+    const t = document.documentElement.getAttribute("data-theme");
+    themeIcon.innerHTML = (t === "dark") ? "&#9728;" : "&#9790;"; // sun when dark, moon when light
+    themeToggle.setAttribute("title", (t === "dark") ? "Switch to light mode" : "Switch to dark mode");
+    themeToggle.setAttribute("aria-label", (t === "dark") ? "Switch to light mode" : "Switch to dark mode");
+  }
+  refreshThemeIcon();
+  themeToggle.addEventListener("click", ()=>{
+    const cur = document.documentElement.getAttribute("data-theme");
+    const next = (cur === "dark") ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("objectfinder-theme", next); }catch(e){}
+    refreshThemeIcon();
+  });
+
+  /* ---------- global error surfacing ---------- */
+  const errBanner = document.getElementById("errBanner");
+  function showGlobalError(msg){
+    errBanner.textContent = "Something went wrong: " + msg + " (see browser console, press F12, for details).";
+    errBanner.style.display = "block";
+  }
+  window.addEventListener("error", e=> showGlobalError(e.message || "script error"));
+  window.addEventListener("unhandledrejection", e=> showGlobalError((e.reason && e.reason.message) || "async error"));
+
+  /* ---------- config ---------- */
+  const IMAGE_EXTS = ["jpg","jpeg","png","webp","gif","bmp"];
+  const DET_MODEL  = "Xenova/detr-resnet-50";
+  const CLIP_MODEL = "Xenova/clip-vit-base-patch32";
+  const DET_THRESH = 0.55;
+  const MAX_INDEX  = 400;
+  // Multiple CDN candidates, tried in order until one imports successfully.
+  const CDN_URLS = [
+    "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0",
+    "https://unpkg.com/@huggingface/transformers@3.0.0",
+    "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"
+  ];
+
+  /* ---------- state ---------- */
+  let TF = null;                 // the loaded transformers module
+  let detector = null, embedder = null, device = null;
+  let queryDetections = [];
+  let selected = null;
+  let folderHandle = null;
+  let allResults = [];
+  let queryNaturalW = 0, queryNaturalH = 0;
+
+  const $ = id => document.getElementById(id);
+  const supported = (typeof window.showDirectoryPicker === "function");
+
+  /* ---------- lazy loader for Transformers.js ---------- */
+  async function loadTF(){
+    if(TF) return TF;
+    let lastErr;
+    for(const url of CDN_URLS){
+      try{
+        const mod = await import(url);
+        if(mod && mod.pipeline){
+          mod.env.allowLocalModels = false;
+          mod.env.useBrowserCache  = true;
+          TF = mod;
+          return TF;
+        }
+      }catch(err){ lastErr = err; /* try next CDN */ }
+    }
+    throw new Error("Could not load the AI library from any CDN. " +
+      "Check your internet connection on first run. " + (lastErr ? lastErr.message : ""));
+  }
+  async function pickDevice(){
+    try{ if(navigator.gpu && await navigator.gpu.requestAdapter()) return "webgpu"; }catch(e){}
+    return "wasm";
+  }
+  async function ensureDetector(){
+    if(detector) return detector;
+    await loadTF();
+    if(!device) device = await pickDevice();
+    detector = await TF.pipeline("object-detection", DET_MODEL, { device });
+    return detector;
+  }
+  async function ensureEmbedder(){
+    if(embedder) return embedder;
+    await loadTF();
+    if(!device) device = await pickDevice();
+    embedder = await TF.pipeline("image-feature-extraction", CLIP_MODEL, { device });
+    return embedder;
+  }
+
+  /* ---------- generic helpers ---------- */
+  function goStep(n){
+    ["screen1","screen2","screen3","screen4"].forEach(s=> $(s).classList.remove("active"));
+    $("screen"+n).classList.add("active");
+    document.querySelectorAll("#stepper .step").forEach(el=>{
+      const k = +el.dataset.step;
+      el.classList.toggle("done", k < n);
+      el.classList.toggle("active", k === n);
+    });
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+  function cropToURL(imgEl, box){
+    const x=Math.max(0,Math.round(box.xmin)), y=Math.max(0,Math.round(box.ymin));
+    const w=Math.max(1,Math.round(box.xmax-box.xmin)), h=Math.max(1,Math.round(box.ymax-box.ymin));
+    const c=document.createElement("canvas"); c.width=w; c.height=h;
+    c.getContext("2d").drawImage(imgEl,x,y,w,h,0,0,w,h);
+    return c.toDataURL("image/png");
+  }
+  async function embed(src){
+    const ex = await ensureEmbedder();
+    const out = await ex(src);
+    let v = out.data ? Array.from(out.data) : out.tolist()[0];
+    let n=0; for(const x of v) n+=x*x; n=Math.sqrt(n)||1;
+    return v.map(x=>x/n);
+  }
+  function cosine(a,b){ let s=0; for(let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
+  function loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
+
+  /* ================= SCREEN 1: upload (wired synchronously) ================= */
+  if(!supported) $("unsupported").style.display = "block";
+  $("uploadBtn").addEventListener("click", ()=> $("fileInput").click());
+  $("dropzone").addEventListener("click", e=>{ if(e.target.id!=="uploadBtn" && e.target.closest("#uploadBtn")===null) $("fileInput").click(); });
+  $("fileInput").addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) handleUpload(e.target.files[0]); });
+  ["dragover","dragenter"].forEach(ev=> $("dropzone").addEventListener(ev, e=>{ e.preventDefault(); $("dropzone").classList.add("drag"); }));
+  ["dragleave","drop"].forEach(ev=> $("dropzone").addEventListener(ev, e=>{ e.preventDefault(); $("dropzone").classList.remove("drag"); }));
+  $("dropzone").addEventListener("drop", e=>{ const f=e.dataTransfer.files[0]; if(f && f.type.startsWith("image/")) handleUpload(f); });
+
+  async function handleUpload(file){
+    const url = URL.createObjectURL(file);
+    goStep(2);
+    $("detectPanel").style.display = "none";
+    const st = $("detectStatus");
+    st.className = "statusPill"; st.style.display = "block";
+    st.innerHTML = '<span class="spinner"></span> Loading the detection model (first run downloads it once)&hellip;';
+    $("queryImg").src = url;
+    try{
+      await ensureDetector();
+      st.innerHTML = '<span class="spinner"></span> Detecting subjects in your image&hellip;';
+      const imgEl = await loadImg(url);
+      queryNaturalW = imgEl.naturalWidth; queryNaturalH = imgEl.naturalHeight;
+      const raw = await detector(url, { threshold: DET_THRESH });
+      queryDetections = raw
+        .map(d=>({ label:d.label, score:d.score, box:d.box, area:(d.box.xmax-d.box.xmin)*(d.box.ymax-d.box.ymin) }))
+        .sort((a,b)=> b.area-a.area);
+      if(queryDetections.length === 0){
+        st.className="statusPill"; st.innerHTML = "No subjects were detected. Please go Back and try another image.";
+        return;
+      }
+      for(const d of queryDetections) d.cropURL = cropToURL(imgEl, d.box);
+      renderCrops();
+      st.style.display = "none";
+      $("detectPanel").style.display = "grid";
+      drawBoxesWhenReady();
+      selectCrop(0);
+    }catch(err){
+      console.error(err);
+      st.className = "statusPill err";
+      st.innerHTML = "&#9888; " + (err && err.message ? err.message : err) +
+        "<br><small>Make sure you have internet on the first run and are using Microsoft Edge or Chrome. "+
+        "Also, open the file through a local server or a hosted URL, not by double-clicking (file://).</small>";
+    }
+  }
+
+  /* percentage-based overlay, drawn after image has real width (fixes zoom bug) */
+  function drawBoxes(){
+    const frame = $("imgFrame");
+    frame.querySelectorAll(".box").forEach(b=>b.remove());
+    if(!queryNaturalW || !queryNaturalH) return;
+    queryDetections.forEach(d=>{
+      const el=document.createElement("div");
+      el.className="box"+(d.label==="person"?" person":"");
+      el.style.left  =(d.box.xmin/queryNaturalW*100)+"%";
+      el.style.top   =(d.box.ymin/queryNaturalH*100)+"%";
+      el.style.width =((d.box.xmax-d.box.xmin)/queryNaturalW*100)+"%";
+      el.style.height=((d.box.ymax-d.box.ymin)/queryNaturalH*100)+"%";
+      el.innerHTML='<span class="tag">'+d.label+'</span>';
+      frame.appendChild(el);
+    });
+  }
+  function drawBoxesWhenReady(){
+    const img=$("queryImg");
+    const tryDraw=()=>{ if(img.clientWidth>0) drawBoxes(); else requestAnimationFrame(tryDraw); };
+    if(img.complete && img.naturalWidth) requestAnimationFrame(tryDraw);
+    else img.onload=()=> requestAnimationFrame(tryDraw);
+  }
+  window.addEventListener("resize", ()=>{ if(queryDetections.length) drawBoxes(); });
+
+  function renderCrops(){
+    const list=$("cropList"); list.innerHTML="";
+    queryDetections.forEach((d,i)=>{
+      const c=document.createElement("div"); c.className="crop"; c.dataset.i=i;
+      c.innerHTML='<div class="check">&#10003;</div><img src="'+d.cropURL+'"/><div class="lbl">'+d.label+'</div>';
+      c.addEventListener("click", ()=> selectCrop(i));
+      list.appendChild(c);
+    });
+  }
+  async function selectCrop(i){
+    document.querySelectorAll("#cropList .crop").forEach(el=> el.classList.toggle("sel", +el.dataset.i===i));
+    const d=queryDetections[i];
+    $("selName").textContent=d.label; $("selThumb").src=d.cropURL;
+    $("selDesc").textContent="We will look for images that contain a "+d.label+".";
+    const btn=$("toFolderBtn");
+    btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Preparing subject&hellip;';
+    try{
+      const emb=await embed(d.cropURL);
+      selected={ label:d.label, cropURL:d.cropURL, embedding:emb };
+    }catch(err){
+      console.error(err);
+      selected={ label:d.label, cropURL:d.cropURL, embedding:null };
+    }
+    btn.disabled=false; btn.innerHTML='Continue to choose folder &#8594;';
+  }
+  $("backTo1").addEventListener("click", ()=> goStep(1));
+  $("toFolderBtn").addEventListener("click", ()=>{
+    if(!selected) return;
+    $("chip3Img").src=selected.cropURL; $("chip3Name").textContent=selected.label; goStep(3);
+  });
+
+  /* ================= SCREEN 3: choose folder ================= */
+  $("chip3Change").addEventListener("click", ()=> goStep(2));
+  $("folderZone").addEventListener("click", e=>{ if(e.target.id!=="pickFolderBtn" && e.target.closest("#pickFolderBtn")===null) $("pickFolderBtn").click(); });
+  $("pickFolderBtn").addEventListener("click", startSearch);
+
+  async function startSearch(){
+    if(!supported){ alert("Folder access needs Microsoft Edge, Chrome, or Opera on desktop."); return; }
+    try{ folderHandle = await window.showDirectoryPicker(); }catch(e){ return; }
+    goStep(4);
+    $("ctxImg").src=selected.cropURL; $("ctxName").textContent=selected.label;
+    $("ctxFolder").textContent=folderHandle.name;
+    $("resultsLayout").style.display="none";
+    $("idxProgress").style.display="block";
+    $("idxBar").style.width="0%"; $("idxLabel").textContent="Scanning folders\u2026";
+    allResults=[];
+    try{
+      if(!selected.embedding) selected.embedding = await embed(selected.cropURL);
+      await ensureDetector(); await ensureEmbedder();
+    }catch(err){
+      $("idxLabel").innerHTML="&#9888; Could not load the AI models. Check your connection and use Edge/Chrome.";
+      return;
+    }
+    const files=[]; await walk(folderHandle,"",files);
+    const total=Math.min(files.length,MAX_INDEX);
+    if(total===0){ $("idxLabel").textContent="No images found in that folder."; return; }
+    let kept=0;
+    for(let i=0;i<total;i++){
+      const f=files[i];
+      try{
+        const file=await f.handle.getFile();
+        const url=URL.createObjectURL(file);
+        const best=await scoreImage(url);
+        if(best!==null){ allResults.push({ relPath:f.relPath, thumbURL:url, file, score:best }); kept++; }
+        else URL.revokeObjectURL(url);
+      }catch(e){ /* skip */ }
+      const pct=Math.round(((i+1)/total)*100);
+      $("idxBar").style.width=pct+"%";
+      $("idxLabel").textContent="Scanning for "+selected.label+", "+(i+1)+" of "+total+
+        "  ("+kept+" with a "+selected.label+" so far)"+
+        (files.length>MAX_INDEX?"  [first "+MAX_INDEX+" of "+files.length+"]":"");
+      if(i%3===0) await new Promise(r=>setTimeout(r,0));
+    }
+    allResults.sort((a,b)=> b.score-a.score);
+    $("idxProgress").style.display="none";
+    $("resultsLayout").style.display="grid";
+    applyThreshold();
+  }
+
+  /* strict filter: image must actually contain the chosen class, else excluded */
+  async function scoreImage(url){
+    const dets=await detector(url,{ threshold:DET_THRESH });
+    const targets=dets.filter(d=> d.label===selected.label);
+    if(targets.length===0) return null;
+    const imgEl=await loadImg(url);
+    let best=0;
+    for(const d of targets){
+      const emb=await embed(cropToURL(imgEl,d.box));
+      const sim=cosine(selected.embedding,emb);
+      if(sim>best) best=sim;
+    }
+    return best;
+  }
+  async function walk(dirHandle, prefix, out){
+    for await (const entry of dirHandle.values()){
+      if(entry.kind==="file"){
+        const ext=entry.name.split(".").pop().toLowerCase();
+        if(IMAGE_EXTS.includes(ext)) out.push({ handle:entry, relPath:prefix+entry.name });
+      }else if(entry.kind==="directory"){
+        await walk(entry, prefix+entry.name+"/", out);
+      }
+    }
+  }
+
+  /* ================= results + threshold ================= */
+  $("threshold").addEventListener("input", e=>{ $("thVal").textContent=e.target.value+"%"; applyThreshold(); });
+  $("clearFilters").addEventListener("click", ()=>{ $("threshold").value=55; $("thVal").textContent="55%"; applyThreshold(); });
+  function applyThreshold(){
+    const th=(+$("threshold").value)/100;
+    const shown=allResults.filter(r=> r.score>=th);
+    $("ctxCount").textContent=shown.length;
+    $("showing").textContent="Showing "+shown.length+" match"+(shown.length===1?"":"es");
+    const grid=$("resultsGrid"); grid.innerHTML="";
+    $("noMatch").style.display=shown.length?"none":"block";
+    shown.forEach(r=> grid.appendChild(resultCard(r)));
+  }
+  function resultCard(r){
+    const card=document.createElement("div"); card.className="rcard"; card.title=r.relPath;
+    const pct=Math.round(r.score*100);
+    card.innerHTML=
+      '<span class="score">'+pct+'%</span>'+
+      '<img class="thumb" src="'+r.thumbURL+'" alt="'+r.relPath+'"/>'+
+      '<div class="foot"><span class="path" title="'+r.relPath+'">'+r.relPath+'</span>'+
+        '<button class="dots" type="button" aria-label="Actions">&#8942;</button></div>'+
+      '<div class="menu">'+
+        '<button data-act="view" type="button"><span>&#128065;</span> View</button>'+
+        '<button data-act="download" type="button"><span>&#11015;</span> Download</button>'+
+      '</div>';
+    const menu=card.querySelector(".menu");
+    card.querySelector(".dots").addEventListener("click", e=>{
+      e.stopPropagation();
+      document.querySelectorAll(".menu.open").forEach(m=>{ if(m!==menu) m.classList.remove("open"); });
+      menu.classList.toggle("open");
+    });
+    card.querySelector(".thumb").addEventListener("click", ()=> openLightbox(r));
+    menu.querySelector('[data-act="view"]').addEventListener("click", ()=>{ menu.classList.remove("open"); openLightbox(r); });
+    menu.querySelector('[data-act="download"]').addEventListener("click", ()=>{ menu.classList.remove("open"); download(r); });
+    return card;
+  }
+  document.addEventListener("click", ()=> document.querySelectorAll(".menu.open").forEach(m=> m.classList.remove("open")));
+  function openLightbox(r){ $("lbImg").src=r.thumbURL; $("lbCap").textContent=r.relPath; $("lightbox").classList.add("open"); }
+  $("lbClose").addEventListener("click", ()=> $("lightbox").classList.remove("open"));
+  $("lightbox").addEventListener("click", e=>{ if(e.target.id==="lightbox") $("lightbox").classList.remove("open"); });
+  function download(r){
+    const a=document.createElement("a"); a.href=r.thumbURL; a.download=r.relPath.split("/").pop();
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  /* ================= reset ================= */
+  $("newSearch").addEventListener("click", resetAll);
+  $("startOver").addEventListener("click", resetAll);
+  function resetAll(){
+    allResults.forEach(r=>{ try{URL.revokeObjectURL(r.thumbURL);}catch(e){} });
+    allResults=[]; selected=null; queryDetections=[]; folderHandle=null;
+    $("fileInput").value=""; $("resultsGrid").innerHTML=""; goStep(1);
+  }
+})();
+</script>
+</body>
+</html>
