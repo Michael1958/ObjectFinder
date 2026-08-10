@@ -53,7 +53,6 @@
     --note-bg:#16283A; --note-border:#2C4A6B; --note-text:#9EC5EC;
     --shadow:0 10px 28px rgba(0,0,0,.45); --lightbox-bg:rgba(0,0,0,.90);
   }
-
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
   body{font-family:"Segoe UI",system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; transition:background .2s ease, color .2s ease;}
@@ -61,6 +60,8 @@
   .brand{display:flex; align-items:center; gap:12px; font-size:20px; font-weight:600;}
   .logo{width:38px; height:38px; border-radius:50%; background:var(--logo-bg); display:flex; align-items:center; justify-content:center; font-size:19px;}
   .topbar-right{display:flex; align-items:center; gap:16px;}
+  .appVersion{font-size:12px; font-weight:600; color:var(--header-muted); white-space:nowrap; opacity:.9;}
+  @media(max-width:520px){.appVersion{display:none;}}
   .themeToggle{width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.12); color:var(--header-text); cursor:pointer; font-size:18px; line-height:1; display:flex; align-items:center; justify-content:center; transition:background .15s, transform .15s;}
   .themeToggle:hover{background:rgba(255,255,255,.24); transform:scale(1.05);}
   .wrap{flex:1 0 auto; max-width:1180px; width:100%; margin:0 auto; padding:24px 20px 30px;}
@@ -81,6 +82,10 @@
   .dropzone:hover,.dropzone.drag{background:var(--soft-bg); border-color:var(--primary);}
   .dropzone .icon{font-size:44px; color:var(--primary);}
   .dropzone .hint{color:var(--muted); font-size:14px; margin-top:10px;}
+  .compatRow{margin-top:14px; text-align:center;}
+  .compatRow .link{font-size:13px;}
+  .browserNote{margin:16px auto 0; max-width:620px; text-align:left; background:var(--note-bg); border:1px solid var(--note-border); color:var(--note-text); padding:12px 15px; border-radius:10px; font-size:13px; line-height:1.55;}
+  .browserNote b{font-weight:700;}
   .privacy{margin:18px auto 0; display:flex; gap:8px; align-items:center; width:max-content; background:var(--pill-bg); color:var(--pill-text); padding:8px 14px; border-radius:20px; font-size:13px; font-weight:600;}
   .unsupported{display:none; margin:16px auto 0; max-width:640px; text-align:left; background:var(--err-bg); border:1px solid var(--err-border); color:var(--err-text); padding:14px 16px; border-radius:10px; font-size:14px; line-height:1.5;}
   /* OR divider and describe box */
@@ -178,6 +183,7 @@
   <header class="topbar">
     <div class="brand"><div class="logo">&#128269;</div><span>ObjectFinder</span></div>
     <div class="topbar-right">
+      <span class="appVersion" id="appVersion">Version: 2026-01</span>
       <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode"><span id="themeIcon">&#9790;</span></button>
     </div>
   </header>
@@ -201,9 +207,8 @@
         </div>
         <div class="privacy"><span>&#128274;</span> 100% offline, runs in your browser</div>
         <div class="unsupported" id="unsupported">
-          <b>This browser can&rsquo;t open a folder later.</b><br>
-          The folder search needs the File System Access API (Microsoft Edge, Chrome, or Opera on desktop).
-          Firefox and Safari are not supported. Please use Edge or Chrome.
+          <b>Heads up about folder access.</b><br>
+          The fast folder picker needs a Chromium browser (Microsoft Edge, Chrome, or Opera). If your browser does not support it, ObjectFinder automatically uses a compatibility folder picker instead, so you can still choose any folder.
         </div>
         <input type="file" id="fileInput" accept="image/*" hidden />
       </div>
@@ -244,13 +249,23 @@
       <div class="chip"><img id="chip3Img" alt=""/><span>Searching for: <b id="chip3Name">&hellip;</b></span><button class="link" id="chip3Change" type="button" style="font-size:13px;">Change</button></div>
       <div class="card" style="max-width:760px;margin:0 auto;text-align:center;">
         <h1>Choose a folder to search</h1>
-        <p class="sub">Select a folder on your computer. We scan it and all its subfolders for your subject.</p>
+        <p class="sub">Select any folder on your computer. We scan it and all its subfolders, and only image files are searched.</p>
         <div class="dropzone" id="folderZone">
           <div class="icon">&#128193;</div>
           <div><button class="btn" id="pickFolderBtn" type="button" style="margin-top:12px;"><span>&#128193;</span> Choose folder to search</button></div>
-          <div class="hint">Scans this folder and all subfolders. Your images never leave your computer.</div>
+          <div class="hint">Scans this folder and all subfolders. Only image files are read. Your images never leave your computer.</div>
+        </div>
+        <div class="browserNote" id="browserNote">
+          <b>About the next prompt:</b> your browser will ask to confirm and may use the word &ldquo;upload&rdquo;. That is your browser&rsquo;s standard wording for reading a folder. ObjectFinder does <b>not</b> upload anything. All files stay on your computer and are only read locally to find matches.
+        </div>
+        <div class="compatRow" style="display:none;">
+          <button class="link" id="compatBtn" type="button">Pick a folder</button>
         </div>
         <div class="privacy"><span>&#128274;</span> 100% offline, runs in your browser</div>
+        <!-- Compatibility folder picker: a plain folder input that is NOT subject to the
+             File System Access API blocklist or enterprise policy, so it can open ANY folder
+             (Downloads, Desktop, Documents, and so on). Only image files are read from it. -->
+        <input type="file" id="folderInput" webkitdirectory directory multiple hidden />
       </div>
     </section>
     <!-- ============ SCREEN 4 : RESULTS ============ -->
@@ -297,24 +312,29 @@
     <button class="close" id="lbClose" type="button">&times;</button>
     <div class="inner"><img id="lbImg" alt=""/><div class="cap" id="lbCap"></div></div>
   </div>
-  <footer>ObjectFinder &middot; Created by Michael Gerontides</footer>
+  <footer>ObjectFinder &middot; Version: 2026-01 &middot; Created by Michael Gerontides</footer>
 <!--
   ARCHITECTURE NOTE:
   This is a PLAIN script (not type="module"). All UI event listeners are attached
   synchronously and DO NOT depend on any AI library loading. Libraries load LAZILY
   via dynamic import() only when first needed. If a CDN is unreachable, the UI still
   works and a clear on-screen message is shown, the app is never left dead.
-  Matching modes:
-    - object/animal (image): DETR detects the class, CLIP image similarity ranks crops.
-    - person (image): Human library face recognition matches the same individual.
-    - description (text): CLIP text-to-image. If the phrase maps to a detectable class
-      (Option A strict), DETR crops that class and CLIP text ranks it; otherwise a
-      whole-image CLIP text match is used as a looser fallback.
+
+  FOLDER ACCESS (two methods, so any folder works):
+    1. showDirectoryPicker() , fast, streaming, used when allowed.
+    2. webkitdirectory input , compatibility picker that works on folders the first
+       method blocks (Downloads, Desktop) and under enterprise policy. Only image
+       files are read from it.
+
+  GPU SAFETY:
+    Models prefer WebGPU for speed but automatically fall back to WASM (CPU) if a
+    GPU error occurs (for example the mapAsync / GPUBuffer error seen on some PCs).
+    On fallback, models are rebuilt on CPU and the query is re-embedded, then the
+    scan continues.
 -->
 <script>
 (function(){
   "use strict";
-
   /* ---------- theme toggle ---------- */
   const themeToggle = document.getElementById("themeToggle");
   const themeIcon   = document.getElementById("themeIcon");
@@ -332,7 +352,6 @@
     try{ localStorage.setItem("objectfinder-theme", next); }catch(e){}
     refreshThemeIcon();
   });
-
   /* ---------- global error surfacing ---------- */
   const errBanner = document.getElementById("errBanner");
   function showGlobalError(msg){
@@ -341,7 +360,6 @@
   }
   window.addEventListener("error", e=> showGlobalError(e.message || "script error"));
   window.addEventListener("unhandledrejection", e=> showGlobalError((e.reason && e.reason.message) || "async error"));
-
   /* ---------- config ---------- */
   const IMAGE_EXTS = ["jpg","jpeg","png","webp","gif","bmp"];
   const DET_MODEL  = "Xenova/detr-resnet-50";
@@ -364,7 +382,6 @@
   /* text-to-image CLIP cosine is small in absolute terms, rescale to a friendly 0..1 */
   const TEXT_LO = 0.15, TEXT_HI = 0.30;
   const DEFAULT_TH = { object:55, face:50, text:55 };
-
   /* ---------- COCO classes the detector knows, plus animal / object synonyms ---------- */
   const COCO_CLASSES = ["person","bicycle","car","motorcycle","airplane","bus","train","truck","boat",
     "traffic light","fire hydrant","stop sign","parking meter","bench","bird","cat","dog","horse","sheep",
@@ -407,9 +424,8 @@
     }
     return null;
   }
-
   /* ---------- state ---------- */
-  let TF = null, detector = null, device = null;
+  let TF = null, detector = null, device = null, forceWasm = false;
   let clipProcessor=null, clipVision=null, clipTokenizer=null, clipText=null;
   let human = null;
   let queryDetections = [];
@@ -418,10 +434,32 @@
   let allResults = [];
   let queryNaturalW = 0, queryNaturalH = 0;
   let curDefaultTh = 55;
-
   const $ = id => document.getElementById(id);
   const supported = (typeof window.showDirectoryPicker === "function");
-
+  /* ---------- GPU error detection + recovery ---------- */
+  function isGpuError(e){
+    const m = ((e && (e.message || e.toString())) || "").toLowerCase();
+    return m.includes("gpubuffer") || m.includes("mapasync") || m.includes("webgpu") ||
+           m.includes("device lost") || m.includes("external instance") ||
+           m.includes("gpu device") || m.includes("createbuffer") || m.includes("gpu ");
+  }
+  async function recoverToWasm(){
+    // Force the CPU (WASM) backend and rebuild everything the current mode needs,
+    // then re-embed the query so comparisons stay consistent.
+    forceWasm = true; device = "wasm";
+    detector = null; clipProcessor=null; clipVision=null; clipTokenizer=null; clipText=null;
+    human = null;
+    if(selected.mode==="text"){
+      await ensureCLIP();
+      if(selected.detectClass) await ensureDetector();
+      selected.textEmbedding = await embedTextCLIP(selected.phrase);
+    }else if(selected.mode==="object"){
+      await ensureCLIP(); await ensureDetector();
+      selected.embedding = await embedImageCLIP(selected.cropURL);
+    }else if(selected.mode==="face"){
+      try{ const fe = await faceEmbeddingFrom(selected.cropURL); if(fe) selected.faceEmbedding = fe; }catch(e){}
+    }
+  }
   /* ---------- lazy loaders ---------- */
   async function loadTF(){
     if(TF) return TF;
@@ -439,6 +477,7 @@
     throw new Error("Could not load the AI library from any CDN. Check your internet connection on first run. " + (lastErr ? lastErr.message : ""));
   }
   async function pickDevice(){
+    if(forceWasm) return "wasm";
     try{ if(navigator.gpu && await navigator.gpu.requestAdapter()) return "webgpu"; }catch(e){}
     return "wasm";
   }
@@ -477,6 +516,7 @@
       try{
         created = new H({
           modelBasePath: base, debug:false, cacheModels:true,
+          backend: forceWasm ? "wasm" : "humangl",
           face:{ enabled:true, detector:{ rotation:true, maxDetected:15, return:false },
                  mesh:{ enabled:true }, iris:{ enabled:false }, description:{ enabled:true },
                  emotion:{ enabled:false }, antispoof:{ enabled:false }, liveness:{ enabled:false } },
@@ -491,7 +531,6 @@
     try{ await human.warmup(); }catch(e){}
     return human;
   }
-
   /* ---------- embedding helpers ---------- */
   function normalize(v){ let n=0; for(const x of v) n+=x*x; n=Math.sqrt(n)||1; return v.map(x=>x/n); }
   function cosine(a,b){ let s=0; for(let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
@@ -509,7 +548,6 @@
     return normalize(Array.from(out.text_embeds.data));
   }
   function rescaleText(cos){ let x=(cos-TEXT_LO)/(TEXT_HI-TEXT_LO); return x<0?0:(x>1?1:x); }
-
   async function faceEmbeddingFrom(src){
     const h = await ensureHuman();
     const imgEl = await loadImg(src);
@@ -523,7 +561,6 @@
     }
     return best;
   }
-
   /* ---------- generic helpers ---------- */
   function goStep(n){
     ["screen1","screen2","screen3","screen4"].forEach(s=> $(s).classList.remove("active"));
@@ -548,16 +585,16 @@
     for(const r of allResults){ if(r.score>=th) c++; } return c;
   }
   function setThreshold(v){ curDefaultTh=v; $("threshold").value=v; $("thVal").textContent=v+"%"; }
-
   /* ================= SCREEN 1: upload or describe ================= */
-  if(!supported) $("unsupported").style.display = "block";
+  // The folder picker now uses the webkitdirectory input, which works in Edge,
+  // Chrome, Firefox, and Opera, so the old browser warning is not needed.
+  // (kept in the DOM but not shown)
   $("uploadBtn").addEventListener("click", ()=> $("fileInput").click());
   $("dropzone").addEventListener("click", e=>{ if(e.target.id!=="uploadBtn" && e.target.closest("#uploadBtn")===null) $("fileInput").click(); });
   $("fileInput").addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) handleUpload(e.target.files[0]); });
   ["dragover","dragenter"].forEach(ev=> $("dropzone").addEventListener(ev, e=>{ e.preventDefault(); $("dropzone").classList.add("drag"); }));
   ["dragleave","drop"].forEach(ev=> $("dropzone").addEventListener(ev, e=>{ e.preventDefault(); $("dropzone").classList.remove("drag"); }));
   $("dropzone").addEventListener("drop", e=>{ const f=e.dataTransfer.files[0]; if(f && f.type.startsWith("image/")) handleUpload(f); });
-
   /* text description entry */
   $("descBtn").addEventListener("click", startDescribe);
   $("descInput").addEventListener("keydown", e=>{ if(e.key==="Enter") startDescribe(); });
@@ -568,7 +605,6 @@
     selected = { mode:"text", label:phrase, phrase:phrase, detectClass:cls };
     enterFolderStep();
   }
-
   async function handleUpload(file){
     const url = URL.createObjectURL(file);
     goStep(2);
@@ -598,13 +634,27 @@
       selectCrop(0);
     }catch(err){
       console.error(err);
+      if(isGpuError(err) && !forceWasm){
+        // Retry detection once on CPU.
+        try{
+          await recoverToWasm(); await ensureDetector();
+          const raw = await detector(url, { threshold: DET_THRESH });
+          const imgEl = await loadImg(url);
+          queryNaturalW = imgEl.naturalWidth; queryNaturalH = imgEl.naturalHeight;
+          queryDetections = raw.map(d=>({ label:d.label, score:d.score, box:d.box, area:(d.box.xmax-d.box.xmin)*(d.box.ymax-d.box.ymin) })).sort((a,b)=> b.area-a.area);
+          if(queryDetections.length){
+            for(const d of queryDetections) d.cropURL = cropToURL(imgEl, d.box);
+            renderCrops(); st.style.display="none"; $("detectPanel").style.display="grid"; drawBoxesWhenReady(); selectCrop(0);
+            return;
+          }
+        }catch(e2){ err = e2; }
+      }
       st.className = "statusPill err";
       st.innerHTML = "&#9888; " + (err && err.message ? err.message : err) +
         "<br><small>Make sure you have internet on the first run and are using Microsoft Edge or Chrome. "+
         "Also, open the file through a hosted URL, not by double-clicking (file://).</small>";
     }
   }
-
   function drawBoxes(){
     const frame = $("imgFrame");
     frame.querySelectorAll(".box").forEach(b=>b.remove());
@@ -627,7 +677,6 @@
     else img.onload=()=> requestAnimationFrame(tryDraw);
   }
   window.addEventListener("resize", ()=>{ if(queryDetections.length) drawBoxes(); });
-
   function renderCrops(){
     const list=$("cropList"); list.innerHTML="";
     queryDetections.forEach((d,i)=>{
@@ -650,7 +699,6 @@
   }
   $("backTo1").addEventListener("click", ()=> goStep(1));
   $("toFolderBtn").addEventListener("click", ()=>{ if(selected) enterFolderStep(); });
-
   /* ================= SCREEN 3: choose folder ================= */
   function enterFolderStep(){
     if(selected.mode==="text"){
@@ -665,80 +713,154 @@
   }
   $("chip3Change").addEventListener("click", ()=> goStep(selected && selected.mode==="text" ? 1 : 2));
   $("folderZone").addEventListener("click", e=>{ if(e.target.id!=="pickFolderBtn" && e.target.closest("#pickFolderBtn")===null) $("pickFolderBtn").click(); });
-  $("pickFolderBtn").addEventListener("click", startSearch);
-
+  // PRIMARY folder picker is the webkitdirectory input. It has no system-file
+  // blocklist, works on Downloads/Desktop/Documents, and works from file:// too,
+  // which is why it is used for everyone instead of showDirectoryPicker().
+  $("pickFolderBtn").addEventListener("click", ()=>{ $("folderInput").value=""; $("folderInput").click(); });
+  $("compatBtn").addEventListener("click", ()=>{ $("folderInput").value=""; $("folderInput").click(); });
+  $("folderInput").addEventListener("change", e=>{
+    const list = Array.from(e.target.files || []);
+    if(!list.length) return;
+    const rootName = ((list[0].webkitRelativePath || "").split("/")[0]) || "Selected folder";
+    const items = list
+      .filter(file => IMAGE_EXTS.includes((file.name.split(".").pop() || "").toLowerCase()))
+      .map(file => ({ getFile: async()=>file, relPath: file.webkitRelativePath || file.name }));
+    if(items.length===0){
+      goStep(4);
+      if(selected.mode==="text"){ $("ctxImg").style.display="none"; } else { $("ctxImg").style.display=""; $("ctxImg").src=selected.cropURL; }
+      $("ctxName").textContent = displayName();
+      $("ctxFolder").textContent = rootName;
+      $("resultsLayout").style.display="none";
+      $("idxProgress").style.display="block";
+      $("idxBar").style.width="0%";
+      $("idxLabel").textContent="No image files were found in that folder.";
+      return;
+    }
+    runIndex(items, rootName);
+  });
   function displayName(){ return selected.mode==="text" ? ('"'+selected.phrase+'"') : selected.label; }
-
-  async function startSearch(){
-    if(!supported){ alert("Folder access needs Microsoft Edge, Chrome, or Opera on desktop."); return; }
-    try{ folderHandle = await window.showDirectoryPicker(); }catch(e){ return; }
+  async function pickFolder(){
+    // Preferred method: the fast native folder picker.
+    if(supported){
+      let dirHandle;
+      try{
+        dirHandle = await window.showDirectoryPicker();
+      }catch(e){
+        if(e && e.name === "AbortError") return;            // user cancelled the dialog
+        // The folder was blocked (for example Downloads) or policy denied it.
+        // Fall back to the compatibility picker, which is not subject to that blocklist.
+        $("folderInput").value=""; $("folderInput").click();
+        return;
+      }
+      let items;
+      try{
+        const raw=[]; await walk(dirHandle,"",raw);
+        items = raw.map(it => ({ getFile: ()=> it.handle.getFile(), relPath: it.relPath }));
+      }catch(e){
+        // Read/permission problem, offer the compatibility picker instead.
+        $("folderInput").value=""; $("folderInput").click();
+        return;
+      }
+      runIndex(items, dirHandle.name);
+    }else{
+      // Browser without the native picker: use the compatibility picker directly.
+      $("folderInput").value=""; $("folderInput").click();
+    }
+  }
+  /* prepare models + query embeddings for the selected mode */
+  async function prepareModelsOnce(){
+    if(selected.mode==="text"){
+      setThreshold(DEFAULT_TH.text);
+      showSearchNote(selected.detectClass
+        ? ("Searching for "+displayName()+" by detecting "+selected.detectClass+" and ranking by your description.")
+        : ("This description is not a directly detectable object, so results use whole-image matching and may be looser."));
+      await ensureCLIP();
+      if(selected.detectClass) await ensureDetector();
+      selected.textEmbedding = await embedTextCLIP(selected.phrase);
+    }else if(selected.mode==="face"){
+      setThreshold(DEFAULT_TH.face);
+      $("idxLabel").textContent="Loading the face recognition model (first run downloads it once)\u2026";
+      let faceEmb=null;
+      try{ faceEmb = await faceEmbeddingFrom(selected.cropURL); }catch(e){ faceEmb=null; }
+      if(faceEmb){
+        selected.faceEmbedding = faceEmb;
+        showSearchNote("Matching by face. Only images with a clearly visible face similar to the selected person are shown.");
+      }else{
+        selected.mode="object";
+        setThreshold(DEFAULT_TH.object);
+        await ensureCLIP(); await ensureDetector();
+        selected.embedding = await embedImageCLIP(selected.cropURL);
+        showSearchNote("No clear face was found in the selected person, so results fall back to matching any person. For identity matching, pick an image where the face is clearly visible.");
+      }
+    }else{ /* object */
+      setThreshold(DEFAULT_TH.object);
+      await ensureCLIP(); await ensureDetector();
+      selected.embedding = await embedImageCLIP(selected.cropURL);
+    }
+  }
+  async function prepareModels(){
+    try{
+      await prepareModelsOnce();
+    }catch(err){
+      if(isGpuError(err) && !forceWasm){
+        $("idxLabel").textContent="Graphics acceleration issue detected, switching to compatibility mode\u2026";
+        await recoverToWasm();
+      }else{
+        throw err;
+      }
+    }
+  }
+  /* Uniform indexing entry point for BOTH folder methods.
+     items: array of { getFile:()=>Promise<File>, relPath:string } */
+  async function runIndex(items, rootName){
     goStep(4);
     if(selected.mode==="text"){ $("ctxImg").style.display="none"; }
     else { $("ctxImg").style.display=""; $("ctxImg").src=selected.cropURL; }
     $("ctxName").textContent = displayName();
-    $("ctxFolder").textContent = folderHandle.name;
+    $("ctxFolder").textContent = rootName;
     $("ctxCount").textContent = "0";
     $("searchNote").style.display="none";
     $("resultsLayout").style.display="none";
     $("idxProgress").style.display="block";
     $("idxBar").style.width="0%"; $("idxLabel").textContent="Preparing models\u2026";
     allResults=[];
-
-    /* prepare per mode */
     try{
-      if(selected.mode==="text"){
-        setThreshold(DEFAULT_TH.text);
-        await ensureCLIP();
-        if(selected.detectClass) await ensureDetector();
-        selected.textEmbedding = await embedTextCLIP(selected.phrase);
-        showSearchNote(selected.detectClass
-          ? ("Searching for "+displayName()+" by detecting "+selected.detectClass+" and ranking by your description.")
-          : ("This description is not a directly detectable object, so results use whole-image matching and may be looser."));
-      }else if(selected.mode==="face"){
-        setThreshold(DEFAULT_TH.face);
-        $("idxLabel").textContent="Loading the face recognition model (first run downloads it once)\u2026";
-        let faceEmb=null;
-        try{ faceEmb = await faceEmbeddingFrom(selected.cropURL); }catch(e){ faceEmb=null; }
-        if(faceEmb){
-          selected.faceEmbedding = faceEmb;
-          showSearchNote("Matching by face. Only images with a clearly visible face similar to the selected person are shown.");
-        }else{
-          selected.mode="object";
-          setThreshold(DEFAULT_TH.object);
-          await ensureCLIP(); await ensureDetector();
-          selected.embedding = await embedImageCLIP(selected.cropURL);
-          showSearchNote("No clear face was found in the selected person, so results fall back to matching any person. For identity matching, pick an image where the face is clearly visible.");
-        }
-      }else{ /* object */
-        setThreshold(DEFAULT_TH.object);
-        await ensureCLIP(); await ensureDetector();
-        selected.embedding = await embedImageCLIP(selected.cropURL);
-      }
+      await prepareModels();
     }catch(err){
       console.error(err);
       $("idxLabel").innerHTML="&#9888; Could not load the required models. Check your connection and use Edge or Chrome.";
       return;
     }
-
-    $("idxLabel").textContent="Scanning folders\u2026";
-    const files=[]; await walk(folderHandle,"",files);
-    const total=Math.min(files.length,MAX_INDEX);
-    if(total===0){ $("idxLabel").textContent="No images found in that folder."; return; }
+    $("idxLabel").textContent="Scanning folder\u2026";
+    const total=Math.min(items.length,MAX_INDEX);
+    if(total===0){ $("idxLabel").textContent="No image files were found in that folder."; return; }
     let kept=0;
     for(let i=0;i<total;i++){
-      const f=files[i];
+      const it=items[i];
+      let url=null;
       try{
-        const file=await f.handle.getFile();
-        const url=URL.createObjectURL(file);
-        const best=await scoreDispatch(url);
-        if(best!==null){ allResults.push({ relPath:f.relPath, thumbURL:url, file, score:best }); kept++; }
-        else URL.revokeObjectURL(url);
-      }catch(e){ /* skip unreadable */ }
+        const file=await it.getFile();
+        url=URL.createObjectURL(file);
+        let best;
+        try{
+          best=await scoreDispatch(url);
+        }catch(err){
+          if(isGpuError(err) && !forceWasm){
+            $("idxLabel").textContent="Graphics acceleration issue detected, switching to compatibility mode\u2026";
+            await recoverToWasm();
+            try{ best=await scoreDispatch(url); }catch(e2){ best=null; }
+          }else{
+            best=null;
+          }
+        }
+        if(best!==null){ allResults.push({ relPath:it.relPath, thumbURL:url, file, score:best }); kept++; }
+        else if(url){ URL.revokeObjectURL(url); }
+      }catch(e){ if(url){ try{URL.revokeObjectURL(url);}catch(_){} } }
       const pct=Math.round(((i+1)/total)*100);
       $("idxBar").style.width=pct+"%";
       $("idxLabel").textContent="Scanning for "+displayName()+", "+(i+1)+" of "+total+
         "  ("+kept+" kept so far)"+
-        (files.length>MAX_INDEX?"  [first "+MAX_INDEX+" of "+files.length+"]":"");
+        (items.length>MAX_INDEX?"  [first "+MAX_INDEX+" of "+items.length+"]":"");
       $("ctxCount").textContent=liveMatchCount();
       if(i%3===0) await new Promise(r=>setTimeout(r,0));
     }
@@ -747,9 +869,7 @@
     $("resultsLayout").style.display="grid";
     applyThreshold();
   }
-
   function showSearchNote(msg){ const n=$("searchNote"); n.textContent=msg; n.style.display="block"; }
-
   async function scoreDispatch(url){
     if(selected.mode==="face")  return await scoreImageFace(url);
     if(selected.mode==="text")  return selected.detectClass
@@ -757,7 +877,6 @@
                                    : await scoreImageTextWhole(url);
     return await scoreImageObject(url);
   }
-
   /* object / animal image path: strict, must contain the class */
   async function scoreImageObject(url){
     const dets=await detector(url,{ threshold:DET_THRESH });
@@ -788,7 +907,6 @@
     return best>0 ? best : null;
   }
   function euclid(a,b){ let s=0; for(let i=0;i<a.length;i++){ const d=a[i]-b[i]; s+=d*d; } return Math.sqrt(s); }
-
   /* text path, strict: detect the mapped class, rank crops by text similarity */
   async function scoreImageTextStrict(url){
     const dets=await detector(url,{ threshold:DET_THRESH });
@@ -808,7 +926,6 @@
     const emb=await embedImageCLIP(url);
     return rescaleText(cosine(selected.textEmbedding,emb));
   }
-
   async function walk(dirHandle, prefix, out){
     for await (const entry of dirHandle.values()){
       if(entry.kind==="file"){
@@ -819,7 +936,6 @@
       }
     }
   }
-
   /* ================= results + threshold ================= */
   $("threshold").addEventListener("input", e=>{ $("thVal").textContent=e.target.value+"%"; applyThreshold(); });
   $("clearFilters").addEventListener("click", ()=>{ setThreshold(curDefaultTh); applyThreshold(); });
@@ -863,7 +979,6 @@
     const a=document.createElement("a"); a.href=r.thumbURL; a.download=r.relPath.split("/").pop();
     document.body.appendChild(a); a.click(); a.remove();
   }
-
   /* ================= reset ================= */
   $("newSearch").addEventListener("click", resetAll);
   $("startOver").addEventListener("click", resetAll);
@@ -882,7 +997,6 @@
     goStep(1);
   }
 })();
-
 </script>
 </body>
 </html>
