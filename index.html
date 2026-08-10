@@ -153,6 +153,8 @@
   .bar{height:10px; background:var(--track); border-radius:6px; overflow:hidden;}
   .bar > i{display:block; height:100%; width:0%; background:var(--primary); transition:width .12s linear;}
   .progress .label{font-size:13px; color:var(--muted); margin-top:8px; text-align:center;}
+  .progressActions{display:flex; justify-content:center; margin-top:14px;}
+  .progressActions .btn{padding:9px 20px; font-size:14px;}
   .statusPill{display:none; margin:14px auto 0; width:max-content; max-width:92%; background:var(--status-bg); border:1px solid var(--status-border); color:var(--status-text); padding:9px 15px; border-radius:9px; font-size:13px; text-align:center; line-height:1.5;}
   .statusPill.err{background:var(--err-bg); border-color:var(--err-border); color:var(--err-text);}
   .spinner{width:18px;height:18px;border:3px solid var(--track);border-top-color:var(--primary);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;vertical-align:middle;}
@@ -183,7 +185,7 @@
   <header class="topbar">
     <div class="brand"><div class="logo">&#128269;</div><span>ObjectFinder</span></div>
     <div class="topbar-right">
-      <span class="appVersion" id="appVersion">Version: 2026-01</span>
+      <span class="appVersion" id="appVersion">Version: 2026-03</span>
       <button class="themeToggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode"><span id="themeIcon">&#9790;</span></button>
     </div>
   </header>
@@ -282,6 +284,9 @@
       <div class="progress" id="idxProgress">
         <div class="bar"><i id="idxBar"></i></div>
         <div class="label" id="idxLabel">Preparing&hellip;</div>
+        <div class="progressActions" id="progressActions" style="display:none;">
+          <button class="btn secondary" id="stopBtn" type="button"><span>&#9632;</span> Stop scan and show results</button>
+        </div>
       </div>
       <div class="resultsLayout" id="resultsLayout" style="display:none;">
         <aside class="filters">
@@ -312,7 +317,7 @@
     <button class="close" id="lbClose" type="button">&times;</button>
     <div class="inner"><img id="lbImg" alt=""/><div class="cap" id="lbCap"></div></div>
   </div>
-  <footer>ObjectFinder &middot; Version: 2026-01 &middot; Created by Michael Gerontides</footer>
+  <footer>ObjectFinder &middot; Version: 2026-03 &middot; Created by Michael Gerontides</footer>
 <!--
   ARCHITECTURE NOTE:
   This is a PLAIN script (not type="module"). All UI event listeners are attached
@@ -365,7 +370,7 @@
   const DET_MODEL  = "Xenova/detr-resnet-50";
   const CLIP_MODEL = "Xenova/clip-vit-base-patch32";
   const DET_THRESH = 0.55;
-  const MAX_INDEX  = 400;
+  const MAX_INDEX  = Infinity;   // search ALL image files in the folder (no cap)
   const CDN_URLS = [
     "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0",
     "https://unpkg.com/@huggingface/transformers@3.0.0",
@@ -434,6 +439,7 @@
   let allResults = [];
   let queryNaturalW = 0, queryNaturalH = 0;
   let curDefaultTh = 55;
+  let stopRequested = false;   // set true by the Stop button to end a scan early
   const $ = id => document.getElementById(id);
   const supported = (typeof window.showDirectoryPicker === "function");
   /* ---------- GPU error detection + recovery ---------- */
@@ -834,8 +840,12 @@
     $("idxLabel").textContent="Scanning folder\u2026";
     const total=Math.min(items.length,MAX_INDEX);
     if(total===0){ $("idxLabel").textContent="No image files were found in that folder."; return; }
-    let kept=0;
+    // Enable the Stop button now that the actual scan is starting.
+    stopRequested = false;
+    $("progressActions").style.display="flex";
+    let kept=0, scanned=0, stopped=false;
     for(let i=0;i<total;i++){
+      if(stopRequested){ stopped=true; break; }   // user asked to stop
       const it=items[i];
       let url=null;
       try{
@@ -856,17 +866,23 @@
         if(best!==null){ allResults.push({ relPath:it.relPath, thumbURL:url, file, score:best }); kept++; }
         else if(url){ URL.revokeObjectURL(url); }
       }catch(e){ if(url){ try{URL.revokeObjectURL(url);}catch(_){} } }
-      const pct=Math.round(((i+1)/total)*100);
+      scanned=i+1;
+      const pct=Math.round((scanned/total)*100);
       $("idxBar").style.width=pct+"%";
-      $("idxLabel").textContent="Scanning for "+displayName()+", "+(i+1)+" of "+total+
-        "  ("+kept+" kept so far)"+
-        (items.length>MAX_INDEX?"  [first "+MAX_INDEX+" of "+items.length+"]":"");
+      $("idxLabel").textContent="Scanning for "+displayName()+", "+scanned+" of "+total+
+        "  ("+kept+" kept so far)";
       $("ctxCount").textContent=liveMatchCount();
       if(i%3===0) await new Promise(r=>setTimeout(r,0));
     }
+    // Scan finished, either naturally or because the user pressed Stop.
+    stopRequested = false;
+    $("progressActions").style.display="none";
     allResults.sort((a,b)=> b.score-a.score);
     $("idxProgress").style.display="none";
     $("resultsLayout").style.display="grid";
+    if(stopped){
+      showSearchNote("Scan stopped. Showing matches from the "+scanned+" of "+total+" images searched so far. Press New search to start again.");
+    }
     applyThreshold();
   }
   function showSearchNote(msg){ const n=$("searchNote"); n.textContent=msg; n.style.display="block"; }
@@ -982,7 +998,14 @@
   /* ================= reset ================= */
   $("newSearch").addEventListener("click", resetAll);
   $("startOver").addEventListener("click", resetAll);
+  // Stop button: request the running scan to end; it finalizes with whatever it found.
+  $("stopBtn").addEventListener("click", ()=>{
+    stopRequested = true;
+    $("idxLabel").textContent = "Stopping\u2026 finishing the current image.";
+  });
   function resetAll(){
+    stopRequested = false;
+    $("progressActions").style.display = "none";
     allResults.forEach(r=>{ try{URL.revokeObjectURL(r.thumbURL);}catch(e){} });
     allResults=[]; selected=null; queryDetections=[]; folderHandle=null;
     $("fileInput").value=""; $("resultsGrid").innerHTML="";
