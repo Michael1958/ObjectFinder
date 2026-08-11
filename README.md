@@ -1,73 +1,94 @@
-# ObjectFinder
+# 🔍 ObjectFinder
 
-**Find images on your computer by subject, right from your browser.**
+**ObjectFinder** is a privacy-first image search application that helps you find photos containing a specific person, animal, object, or described subject within your local image collection.
 
-ObjectFinder lets you search a folder on your computer for images that contain a specific subject. You can upload a photo and pick the subject, or simply type a short description of what to find. Everything runs inside your browser, so your images never leave your computer.
-
-### Open the app
-[https://michael1958.github.io/ObjectFinder/](https://michael1958.github.io/ObjectFinder/)
+Unlike cloud-based image search tools, ObjectFinder runs entirely in your web browser. Your images remain on your computer and are never uploaded to a server.
 
 ---
 
-## What you can do
+## ✨ Key Features
 
-- Upload an image and select a subject (a person, an animal, or an object), then search a folder and all its subfolders for matching images.
-- Or type a short description, for example "black cat", "black and white dog", or "a goose", and search without uploading anything.
-- For a person, the app matches by face, so it finds the same individual when the face is clearly visible.
-- View any result in a large preview, or download a copy.
+### 🖼️ Search by Image
+Upload a photo and select a person, animal, or object from the detected subjects.
 
----
+ObjectFinder can then search a folder of images and find visually similar matches.
 
-## Before you start
+### ✍️ Search by Description
+Type a description such as:
 
-- Use **Microsoft Edge or Google Chrome on a desktop or laptop**. The folder search is not available on phones, tablets, Firefox, or Safari.
-- You need an **internet connection the first time you run a search**. The app downloads its recognition models once, then keeps them for reuse, so later searches work faster.
-- The **first search takes about a minute** while those models download. This is a one-time step.
-- **Your privacy is protected.** Images are processed only on your computer and are never uploaded anywhere.
+- black dog
+- white horse
+- goose
+- orange cat
+- red car
 
----
+ObjectFinder converts the description into an AI search query and finds matching images.
 
-## How to use it, in four steps
+### 👤 Person Identification
+When a face is clearly visible, ObjectFinder uses facial recognition technology to find the same individual within your image collection.
 
-1. Open the link and either upload an image or type a description.
-2. If you uploaded an image, choose the subject you want to find.
-3. Choose the folder on your computer to search.
-4. Review the ranked results, then adjust the similarity slider if you want fewer or more matches.
+### 🐶 Animal & Object Detection
+Automatically detects dogs, cats, horses, birds, cars, boats, people, and many other common objects.
 
-If nothing appears on the first try, please wait a moment for the models to finish downloading, then search again.
+### 📁 Folder Search
+Search local folders and subfolders. Only image files are scanned.
 
----
+### 🎯 Similarity Scoring
+Results include confidence percentages and can be filtered using an adjustable similarity threshold.
 
-## How it works
+### 🛑 Stop Search Anytime
+Large searches can be stopped at any point while keeping the results already found.
 
-ObjectFinder runs entirely in your browser using three AI models that load automatically the first time they are needed:
+### 🌙 Dark Mode
+Supports Light and Dark themes.
 
-| Search type | What it matches | Model used |
-| --- | --- | --- |
-| Object or animal (from an image) | The same kind of subject | Object detection plus image similarity |
-| Person (from an image) | The same individual, by face | Face recognition |
-| Description (typed text) | Images matching your words | Text to image similarity |
-
-- **Colors and simple descriptions** work well, for example "black cat" or "brown horse".
-- **Common animals** such as cat, dog, bird, and horse are detected precisely. Less common ones, for example a goose or an eagle, use a looser whole-image match.
-- **People** are matched by face when the face is clearly visible, so a different person will not match.
+### 🔒 Privacy First
+All processing happens locally in your browser.
 
 ---
 
-## Privacy
+## 🚀 How It Works
 
-All processing happens locally in your browser. Your images and the folder you choose are never uploaded to any server. The only network activity is a one-time download of the recognition models from a public code library, after which they are cached for offline reuse.
+ObjectFinder uses AI models for:
 
----
-
-## Known limitations
-
-- Desktop **Microsoft Edge or Chrome only**, because the folder picker needs the File System Access API.
-- Matching an exact individual applies to **people (by face)**, not to specific animals or objects.
-- Face matching needs a **clearly visible face**. Profiles, blurry, tiny, or covered faces may be missed.
-- For speed, the app indexes the first 400 images in a folder.
-- Supported image formats: JPG, JPEG, PNG, WEBP, GIF, BMP.
+- Object Detection (DETR)
+- Image Similarity (CLIP)
+- Text-to-Image Matching (CLIP)
+- Face Recognition (Human.js)
 
 ---
 
-*Created by Michael Gerontides*
+## 📋 Application Workflow
+
+1. Upload an image or enter a description.
+2. Select a detected subject.
+3. Choose a folder to search.
+4. Review and filter results.
+
+---
+
+## 🖥️ Browser Compatibility
+
+Recommended:
+
+- Microsoft Edge
+- Google Chrome
+- Opera
+
+---
+
+## 🏷️ Version
+
+**2026-03**
+
+---
+
+## 👨‍💻 Author
+
+**Michael Gerontides**
+
+---
+
+## ❤️ Privacy-First AI
+
+Your images stay on your computer.
